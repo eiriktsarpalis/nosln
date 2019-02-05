@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>testApp</AssemblyName>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="5.2.0" />
+  </ItemGroup>
+
+</Project>

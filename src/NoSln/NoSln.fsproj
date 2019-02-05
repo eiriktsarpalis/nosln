@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>dotnet-nosln</AssemblyName>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Utils.fs" />
+    <Compile Include="Core.fs" />
+    <Compile Include="Cli.fs" />
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="5.2.0" />
+    <PackageReference Include="Fake.IO.FileSystem" Version="5.11.1" />
+  </ItemGroup>
+</Project>
