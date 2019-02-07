@@ -12,7 +12,3 @@ docker run --name $CONTAINER_NAME \
            -e NUGET_API_KEY=$NUGET_KEY \
            -e TARGETS=$TARGETS \
 		   $IMAGE_LABEL
-
-exit_code=$?
-
-exit $exit_code
