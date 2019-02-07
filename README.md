@@ -1,4 +1,4 @@
-# dotnet-nosln
+# dotnet-nosln [![Build Status](https://travis-ci.org/eiriktsarpalis/nosln.svg?branch=master)](https://travis-ci.org/eiriktsarpalis/nosln)
 
 dotnet-nosln (pronounced "noslyn") is a cli tool that generates solution files. 
 Designed to minimize the awkwardness of solution files, 
