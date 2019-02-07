@@ -34,13 +34,13 @@ with
             | Output _ ->
                 "Output solution file. Defaults to a solution file at the root of the supplied base directory."
             | Include_Projects _ ->
-                "Included project files globbing pattern."
+                "Included project files globbing pattern. Multiple arguments are treated using AND semantics."
             | Exclude_Projects _ ->
-                "Excluded project files globbing pattern."
+                "Excluded project files globbing pattern. Multiple arguments are treated using OR semantics."
             | Include_Files _ ->
-                "Included solution files globbing pattern."
+                "Included solution files globbing pattern. Multiple arguments are treated using AND semantics."
             | Exclude_Files _ ->
-                "Excluded solution files globbing pattern."
+                "Excluded solution files globbing pattern. Multiple arguments are treated using OR semantics."
             | No_Files ->
                 "Do not include any solution items in the generated solution."
             | No_Transitive_Projects ->

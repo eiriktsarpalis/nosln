@@ -18,7 +18,7 @@ To install nosln on your machine, you need to clone the repo and run
 make install
 ```
 
-## More argument
+## More arguments
 
 Full list of all nosln command line arguments:
 ```
@@ -40,13 +40,17 @@ OPTIONS:
                           Output solution file. Defaults to a solution file at the root of the
                           supplied base directory.
     --include-projects, -I <pattern>
-                          Included project files globbing pattern.
+                          Included project files globbing pattern. Multiple arguments are treated
+                          using AND semantics.
     --exclude-projects, -E <pattern>
-                          Excluded project files globbing pattern.
+                          Excluded project files globbing pattern. Multiple arguments are treated
+                          using OR semantics.
     --include-files, -i <pattern>
-                          Included solution files globbing pattern.
+                          Included solution files globbing pattern. Multiple arguments are
+                          treated using AND semantics.
     --exclude-files, -e <pattern>
-                          Excluded solution files globbing pattern.
+                          Excluded solution files globbing pattern. Multiple arguments are
+                          treated using OR semantics.
     --no-files, -F        Do not include any solution items in the generated solution.
     --no-transitive-projects, -T
                           By default, nosln will include transitive p2p dependencies, even if
