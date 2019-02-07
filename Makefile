@@ -6,7 +6,7 @@ TOOL_PATH := "$(SOURCE_DIRECTORY)tools"
 PATH := $(PATH):$(TOOL_PATH)
 CONFIGURATION ?= Release
 NUGET_VERSION ?= 0.0.1
-NUGET_SOURCE ?= ""
+NUGET_SOURCE ?= "https://api.nuget.org/v3/index.json"
 NUGET_API_KEY ?= ""
 DOCKER_TAG = $(shell date +%s)
 
