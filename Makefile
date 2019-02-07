@@ -19,7 +19,7 @@ build:
 
 test: build
 	dotnet nosln -D -o nosln.sln
-	dotnet test
+	dotnet test -c $(CONFIGURATION)
 	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
 	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TARGETS=$1
+TARGETS=${1:-test}
 IMAGE_LABEL=${2:-"docker-nosln-build"}
 CONTAINER_NAME=${3:-"docker-nosln-build-container"}
 
@@ -14,6 +14,9 @@ docker run --name $CONTAINER_NAME \
 		   $IMAGE_LABEL
 
 exit_code=$?
+
+# copy artifacts locally
+docker cp $CONTAINER_NAME:/app/artifacts/ .
 
 # clean up
 docker rm -f $CONTAINER_NAME

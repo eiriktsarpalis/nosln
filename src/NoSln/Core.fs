@@ -21,8 +21,11 @@ let excludedFiles = [ "**/.vs/**/*" ; "**/.git/**/*" ; "**/.store/**/*" ]
 
 /// gets the file path to be used within the solution file
 let getFilePath (config : Configuration) (fullPath : string) =
-    if config.useAbsolutePaths then fullPath
-    else Path.GetRelativePath(config.targetSolutionDir, fullPath)
+    let path =
+        if config.useAbsolutePaths then fullPath
+        else Path.GetRelativePath(config.targetSolutionDir, fullPath)
+
+    Path.toBackSlashSeparators path
 
 /// extracts the solution path (i.e. location of item within nested logical folders) from a given filesystem full path
 let getLogicalPath (config : Configuration) (fullPath : string) =
@@ -68,8 +71,8 @@ let getTransitiveClosure (projects : seq<string>) =
         p2pRegex.Matches(xml) 
         |> Seq.cast<Match> 
         |> Seq.map (fun m -> m.Groups.[1].Value)
-        |> Seq.map (fun r -> Path.Combine(projectDir, r))
-        |> Seq.map Path.GetFullPath
+        |> Seq.map (fun r -> projectDir @@ r)
+        |> Seq.map Path.getFullPath
         |> Seq.toArray
 
     let remaining = Queue projects

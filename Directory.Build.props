@@ -1,0 +1,11 @@
+<Project ToolsVersion="15.0">
+  <!-- Global properties for all projects under batman-api -->
+  <PropertyGroup>
+    <!-- NuGet metadata -->
+    <Description>A CLI tool used for generating solution files.</Description>
+    <Authors>Eirik Tsarpalis</Authors>
+    <Copyright>2019</Copyright>
+    <PackageTags>dotnet, cli, solutions, sln</PackageTags>
+    <RepositoryUrl>https://github.com/eiriktsarpalis/nosln</RepositoryUrl>
+  </PropertyGroup>
+</Project>

@@ -3,6 +3,7 @@ module NoSln.Cli
 open System
 open System.IO
 open System.Runtime.InteropServices
+open System.Text.RegularExpressions
 open Fake.IO.FileSystemOperators
 open Argu
 
@@ -29,7 +30,7 @@ with
             | Version ->
                 "Display the version string and exit."
             | Path _ -> 
-                "Base directory used for populating the solution file. " +
+                "Base directory or project file used for populating the solution file. " +
                 "All projects and files within the directory will be added to the solution. " +
                 "Defaults to the current directory."
             | Output _ ->
@@ -75,9 +76,10 @@ let processArguments (results : ParseResults<Argument>) =
 
     let baseDirectory =
         let validate (path : string) =
-            if Directory.Exists path then Path.GetFullPath path
-            else failwithf "supplied project path %A is not a valid directory." path
-            |> Path.GetFullPath
+            let fullPath = Path.getFullPath path
+            if Directory.Exists fullPath then fullPath
+            elif Regex.IsMatch(fullPath, "\...proj") && File.Exists path then Path.GetDirectoryName fullPath
+            else failwithf "supplied project path %A is not a valid directory or project file." path
 
         match results.TryPostProcessResult(<@ Path @>, validate) with
         | Some p -> p
@@ -104,7 +106,7 @@ let processArguments (results : ParseResults<Argument>) =
         if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")
         else
             match results.TryGetResult <@ Output @> with
-            | Some o -> Path.GetFullPath o
+            | Some o -> Path.getFullPath o
             | None -> baseDirectory @@ Path.GetFileName baseDirectory + ".sln"
 
     GenerateSln {

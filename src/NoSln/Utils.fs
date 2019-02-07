@@ -8,6 +8,13 @@ open System.Reflection
 open System.Runtime.InteropServices
 open Argu
 
+module Assembly =
+    let currentAssembly = Assembly.GetExecutingAssembly()
+
+    let packageVersion =
+        let attribute = currentAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+        attribute.InformationalVersion
+
 module Environment =
 
     type Os = Windows | Mac | Linux | Unknown
@@ -17,13 +24,6 @@ module Environment =
         elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Mac
         elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then Linux
         else Unknown
-
-module Assembly =
-    let currentAssembly = Assembly.GetExecutingAssembly()
-
-    let packageVersion =
-        let attribute = currentAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-        attribute.InformationalVersion
 
 module Console =
 
@@ -48,6 +48,20 @@ type ColoredProcessExiter() =
                 Console.logColor ConsoleColor.Red message
 
             exit(int code)
+
+module Path =
+    let toBackSlashSeparators (path : string) = path.Replace('/', '\\')
+    let toForwardSlashSeparators (path : string) = path.Replace('\\', '/')
+    
+    /// works around Path.GetFullPath issues running on unix
+    let getFullPath (path : string) =
+        match Environment.osPlatform with
+        | Environment.Windows 
+        | Environment.Unknown -> Path.GetFullPath path
+        | Environment.Linux
+        | Environment.Mac -> 
+            // not working properly on unices with backslash paths
+            Path.GetFullPath(toForwardSlashSeparators path)
 
 module File =
 
