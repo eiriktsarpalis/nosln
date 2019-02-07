@@ -13,7 +13,7 @@ then immediately start Visual Studio using that particular solution file.
 
 Running
 ```
-$ dotnet nosln -TF -I '**/*.Tests.??proj' -o tests.sln"
+$ dotnet nosln -TF -I '**/*Tests*' -o tests.sln"
 ```
 will create a solution file containing test projects only.
 
