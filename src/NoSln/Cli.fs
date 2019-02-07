@@ -97,10 +97,10 @@ let processArguments (results : ParseResults<Argument>) =
     let quiet = results.Contains <@ Quiet @>
     let debug = results.Contains <@ Debug @>
     let start =
-        match results.Contains <@ Start @>, Environment.osPlatform with
-        | false, _ -> false
-        | true, Environment.Windows -> true
-        | true, env -> failwithf "argument --start not supported in %A environments" env
+        let start = results.Contains <@ Start @>
+        if start && not Process.isFileExecutionSupported then
+            failwithf "argument --start not supported in %A environments" Environment.osPlatform
+        start
 
     let targetSln =
         if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")

@@ -21,8 +21,8 @@ module Environment =
 
     let osPlatform =
         if RuntimeInformation.IsOSPlatform OSPlatform.Windows then Windows
-        elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Mac
-        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then Linux
+        elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Linux
+        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then Mac
         else Unknown
 
 module Console =
@@ -73,11 +73,22 @@ module File =
 
 
 module Process =
+
+    let isFileExecutionSupported =
+        match Environment.osPlatform with
+        | Environment.Windows
+        | Environment.Mac -> true
+        | _ -> false
     
     let executeFile (path : string) =
         match Environment.osPlatform with
         | Environment.Windows -> 
             let psi = new ProcessStartInfo(path, UseShellExecute = true)
+            let _ = Process.Start psi
+            ()
+
+        | Environment.Mac ->
+            let psi = new ProcessStartInfo("open", path)
             let _ = Process.Start psi
             ()
 
