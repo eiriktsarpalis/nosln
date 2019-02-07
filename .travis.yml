@@ -1,4 +1,3 @@
-language: bash
 os: linux
 
 services:
