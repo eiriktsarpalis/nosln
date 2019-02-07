@@ -2,23 +2,60 @@ module NoSln.Cli
 
 open System
 open System.IO
+open System.Runtime.InteropServices
 open Fake.IO.FileSystemOperators
 open Argu
 
 type Argument =
     | Version
-    | [<MainCommand>] Project of path:string
+    | [<MainCommand>] Path of path:string
     | [<AltCommandLine("-o")>] Output of solution_file:string
+    | [<AltCommandLine("-I")>] Include_Projects of pattern:string
+    | [<AltCommandLine("-E")>] Exclude_Projects of pattern:string
+    | [<AltCommandLine("-i")>] Include_Files of pattern:string
+    | [<AltCommandLine("-e")>] Exclude_Files of pattern:string
+    | [<AltCommandLine("-F")>] No_Files
+    | [<AltCommandLine("-T")>] No_Transitive_Projects
+    | [<AltCommandLine("-a")>] Absolute_Paths
+    | [<AltCommandLine("-f")>] Flatten
+    | [<AltCommandLine("-s")>] Start
+    | [<AltCommandLine("-q")>] Quiet
+    | [<AltCommandLine("-t")>] Temp
 with
     interface IArgParserTemplate with
         member a.Usage =
             match a with
             | Version ->
-                "Display nosln version in use."
-            | Project _ -> 
-                "Directory to generate a solution file for. Defaults to current directory."
+                "Display the version string and exit."
+            | Path _ -> 
+                "Base directory used for populating the solution file. " +
+                "All projects and files within the directory will be added to the solution. " +
+                "Defaults to the current directory."
             | Output _ ->
-                "Output solution file."
+                "Output solution file. Defaults to a solution file at the root of the supplied base directory."
+            | Include_Projects _ ->
+                "Included project files globbing pattern."
+            | Exclude_Projects _ ->
+                "Excluded project files globbing pattern."
+            | Include_Files _ ->
+                "Included solution files globbing pattern."
+            | Exclude_Files _ ->
+                "Excluded solution files globbing pattern."
+            | No_Files ->
+                "Do not include any solution items in the generated solution."
+            | No_Transitive_Projects ->
+                "By default, nosln will include transitive p2p dependencies, even if excluded by a globbing pattern or outside of the project directory." +
+                "Enable this flag to avoid expanding to transitive projects."
+            | Absolute_Paths ->
+                "Use absolute paths in generated solution file. Otherwise contents will be relative to the solution file output folder."
+            | Flatten ->
+                "Places all projects at the root of the solution file without replicating the filesystem structure. Also implies --no-files."
+            | Start ->
+                "For windows systems, starts a Visual Studio process with the newly generated solution file."
+            | Temp ->
+                "Creates a disposable solution file in the system temp folder. Overrides the --output argument. Also implies --absolute-paths."
+            | Quiet ->
+                "Quiet mode, only output the file name of the generated solution to stdout. Useful for passing generated solution to shell scripts."
 
 let mkParser() = 
     ArgumentParser.Create<Argument>(
@@ -28,35 +65,76 @@ let mkParser() =
 
 type CliAction =
     | ShowVersion
-    | GenerateSln of projectDir:string * slnFile:string
+    | GenerateSln of Configuration
 
 let processArguments (results : ParseResults<Argument>) =
     if results.Contains <@ Argument.Version @> then ShowVersion else
 
-    let project =
-        let validate (proj : string) =
-            if File.Exists proj then Path.GetDirectoryName proj
-            elif Directory.Exists proj then proj
-            else failwithf "invalid project path %A" proj
+    let baseDirectory =
+        let validate (path : string) =
+            if Directory.Exists path then Path.GetFullPath path
+            else failwithf "supplied project path %A is not a valid directory." path
             |> Path.GetFullPath
 
-        match results.TryPostProcessResult(<@ Project @>, validate) with
+        match results.TryPostProcessResult(<@ Path @>, validate) with
         | Some p -> p
         | None -> Environment.CurrentDirectory
 
+    let projectIncludes = results.GetResults <@ Include_Projects @> 
+    let projectExcludes = results.GetResults <@ Exclude_Projects @>
+    let fileIncludes = results.GetResults <@ Include_Files @>
+    let fileExcludes = results.GetResults <@ Exclude_Files @>
+    let noFiles = results.Contains <@ No_Files @>
+    let includeTransitive = results.Contains <@ No_Transitive_Projects @>
+    let useAbsolutePaths = results.Contains <@ Absolute_Paths @>
+    let flattenProjects = results.Contains <@ Flatten @>
+    let tmpSln = results.Contains <@ Temp @>
+    let quiet = results.Contains <@ Quiet @>
+    let start =
+        match results.Contains <@ Start @>, Environment.osPlatform with
+        | false, _ -> false
+        | true, Environment.Windows -> true
+        | true, env -> failwithf "argument --start not supported in %A environments" env
 
-    let output = 
-        match results.TryGetResult <@ Output @> with
-        | Some o -> Path.GetFullPath o
-        | None -> project @@ Path.GetFileName(project) + ".sln"
-    
-    GenerateSln(project, output)
+    let targetSln =
+        if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")
+        else
+            match results.TryGetResult <@ Output @> with
+            | Some o -> Path.GetFullPath o
+            | None -> baseDirectory @@ Path.GetFileName baseDirectory + ".sln"
+
+    GenerateSln {
+        baseDirectory = baseDirectory
+        projectIncludes = projectIncludes
+        projectExcludes = projectExcludes
+        fileIncludes = fileIncludes
+        fileExcludes = fileExcludes
+        
+        targetSolutionFile = targetSln
+        targetSolutionDir = Path.GetDirectoryName targetSln
+
+        noFiles = noFiles
+        includeTransitiveProjects = not includeTransitive
+        useAbsolutePaths = useAbsolutePaths || tmpSln
+        flattenProjects = flattenProjects
+        start = start
+        quiet = quiet
+    }
+
 
 let handleCliAction (action : CliAction) =
     match action with
     | ShowVersion -> Console.log Assembly.packageVersion
-    | GenerateSln(projectDir, targetSolutionFile) ->
-        let solutionDir = Path.GetDirectoryName targetSolutionFile
-        let sln = Core.createSolutionFromDirectory (Some solutionDir) projectDir
-        let slnContents = Core.formatSolutionFile sln
-        Core.writeSolutionFile targetSolutionFile slnContents
+    | GenerateSln config ->
+        if not config.quiet then
+            Console.logf "dotnet-nosln version %s" Assembly.packageVersion
+
+        let sln = Core.createSolution config
+        let slnContents = Formatter.formatSolution sln
+        let isReplaced = File.createOrReplace config.targetSolutionFile slnContents
+
+        if config.quiet then Console.log config.targetSolutionFile
+        elif isReplaced then Console.logfColor ConsoleColor.Yellow "replaced solution file %A" config.targetSolutionFile
+        else Console.logfColor ConsoleColor.DarkGreen "created solution file %A" config.targetSolutionFile
+
+        if config.start then Process.executeFile config.targetSolutionFile

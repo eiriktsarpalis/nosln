@@ -10,7 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Utils.fs" />
+    <Compile Include="Types.fs" />
     <Compile Include="Core.fs" />
+    <Compile Include="Formatter.fs" />
     <Compile Include="Cli.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>

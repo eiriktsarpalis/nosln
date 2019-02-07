@@ -7,124 +7,55 @@ open System.Collections.Generic
 open System.IO
 open System.Text.RegularExpressions
 open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing
 
-type Solution = Solution of SlnNode list
+open NoSln
 
-and SlnNode =
-    | Directory of id:Guid * name:string * nodes:SlnNode list * files:string list
-    | Project of id:Guid * name:string * path:string
+/// Folder name used for placing files that are at the base directory root folder
+let rootFilesFolder = ["Solution Items"]
+/// solution folder used for transitive p2p dependencies that are outside the base directory
+let transitiveProjectsFolder : string list = [".external"]
+/// files to be always excluded from globbing
+let excludedFiles = [ "**/.vs/**/*" ; "**/.git/**/*" ; "**/.store/**/*" ]
 
-let private projectGuid = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
-let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
+/// gets the file path to be used within the solution file
+let getFilePath (config : Configuration) (fullPath : string) =
+    if config.useAbsolutePaths then fullPath
+    else Path.GetRelativePath(config.targetSolutionDir, fullPath)
 
-/// Formats the contents of a solution file using a list of projects
-let formatSolutionFile (Solution nodes) = 
-    seq {
-        let fmtGuid (g:Guid) = g.ToString().ToUpper()
+/// extracts the solution path (i.e. location of item within nested logical folders) from a given filesystem full path
+let getLogicalPath (config : Configuration) (fullPath : string) =
+    let relativePath = Path.GetRelativePath(config.baseDirectory, fullPath)
+    let slnPath = Path.GetDirectoryName relativePath
+    match slnPath.Split Path.DirectorySeparatorChar |> Array.toList with
+    | [x] when String.IsNullOrEmpty x -> []
+    | path -> path
 
-        yield ""
-        yield "Microsoft Visual Studio Solution File, Format Version 12.00"
-        yield "# Visual Studio 15"
-        yield "VisualStudioVersion = 15.0.27428.2002"
-        yield "MinimumVisualStudioVersion = 10.0.40219.1"
+/// creates an empty solution folder
+let mkSln() : Solution = { folders = Map.Empty ; projects = [] }
 
-        let projects = ResizeArray<Guid>()
-        let nestedNodes = ResizeArray<Guid * Guid>()
+/// creates a new project node from project file path
+let mkProject (config : Configuration) (fullPath : string) : Project =
+    let name = Path.GetFileNameWithoutExtension fullPath
+    let path = getFilePath config fullPath
+    let logicalPath = 
+        match getLogicalPath config fullPath with
+        | [] -> []
+        | ".." :: _ -> transitiveProjectsFolder
+        | p -> List.take (p.Length - 1) p // do not include project folders in logical paths
 
-        // Declaration Section
-        let rec fmtNode (node : SlnNode) = seq {
-            match node with
-            | Project (id, name, path) ->
-                projects.Add id
+    { id = Guid.NewGuid() ; name = name ; path = path ; logicalPath = logicalPath ; fullPath = fullPath }
 
-                yield sprintf """Project("{%s}") = "%s", "%s", "{%s}" """
-                            (fmtGuid projectGuid) name path (fmtGuid id)
+/// creates a new file node from file path
+let mkFile (config : Configuration) (fullPath : string) : File =
+    let path = getFilePath config fullPath
+    let logicalPath = 
+        match getLogicalPath config path with
+        | [] -> rootFilesFolder
+        | p -> p
 
-                yield "EndProject"
-        
-            | Directory (id, name, nodes, files) ->
-                yield sprintf """Project("{%s}") = "%s", "%s", "{%s}" """
-                            (fmtGuid directoryGuid) name name (fmtGuid id)
-
-                if not(List.isEmpty files) then
-                    yield "\tProjectSection(SolutionItems) = preProject"
-                    for file in files do yield sprintf "\t\t%s = %s" file file
-                    yield "\tEndProjectSection"
-
-                yield "EndProject"
-
-                for node in nodes do
-                    let nodeId = match node with Project(id = id) | Directory(id = id) -> id
-                    nestedNodes.Add (nodeId, id)
-                    yield! fmtNode node
-        }
-
-        for node in nodes do yield! fmtNode node
-
-        // Global Sections
-        yield "Global"
-
-        yield "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution"
-        yield "\t\tDebug|Any CPU = Debug|Any CPU"
-        yield "\t\tRelease|Any CPU = Release|Any CPU"
-        yield "\tEndGlobalSection"
-
-        yield "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution"
-        for proj in projects do 
-            let fmt config platform cfg = 
-                sprintf "\t\t{%s}.%s|%s.%s = %s|%s"
-                    (fmtGuid proj) config platform cfg config platform
-
-            yield fmt "Debug" "Any CPU" "ActiveCfg"
-            yield fmt "Debug" "Any CPU" "Build.0"
-            yield fmt "Release" "Any CPU" "ActiveCfg"
-            yield fmt "Release" "Any CPU" "Build.0"
-        yield "\tEndGlobalSection"
-
-        yield "\tGlobalSection(NestedProjects) = preSolution"
-        for child,parent in nestedNodes do yield sprintf "\t\t{%s} = {%s}" (fmtGuid child) (fmtGuid parent)
-        yield "\tEndGlobalSection"
-
-        yield "EndGlobal"
-    } |> String.concat Environment.NewLine
-
-
-let createSolutionFromDirectory (solutionFolder : string option) (path : string) =
-    let relativizePath =
-        match solutionFolder with
-        | None -> id
-        | Some f -> fun p -> Path.GetRelativePath(f, p)
-
-    let skippedFolders = HashSet [".git" ; ".vs" ; ".store" ]
-
-    let rec walk path =
-        let files = Directory.EnumerateFiles path |> Seq.toList
-        match files |> List.tryFind (fun f -> f.EndsWith "proj") with
-        | Some proj -> Project(Guid.NewGuid(), Path.GetFileNameWithoutExtension proj, relativizePath proj)
-        | None ->
-            let children = 
-                Directory.EnumerateDirectories path 
-                |> Seq.filter (fun d -> Path.GetFileName d |> skippedFolders.Contains |> not)
-                |> Seq.map walk 
-                |> Seq.toList
-
-            let directoryName = Path.GetFileName path
-            let relFiles = files |> List.map relativizePath
-            Directory(Guid.NewGuid(), directoryName, children, relFiles)
-            
-    if not (Directory.Exists path) then invalidArg "path" "path does not exist"
-
-    match walk path with
-    | Project _ as p -> Solution [p]
-    | Directory(nodes = nodes ; files = []) -> Solution(nodes)
-    | Directory(id = id; nodes = nodes; files = files) ->
-        let slnItems = Directory(id, "Solution Items", [], files)
-        Solution(slnItems :: nodes)
-
-let writeSolutionFile (path : string) (contents : string) =
-    let dir = Path.GetDirectoryName path
-    Directory.ensure dir
-    File.WriteAllText(path, contents)
+    { id = path ; path = path ; logicalPath = logicalPath ; fullPath = fullPath }
 
 /// Calculates the transitive closure of project-2-project references
 let getTransitiveClosure (projects : seq<string>) =
@@ -151,3 +82,77 @@ let getTransitiveClosure (projects : seq<string>) =
                 remaining.Enqueue r
         
     Seq.toList visited
+    
+/// general-purpose function that updates solution folder within a given path using existing solution
+/// if path has not been created yet, it will be populated recursively
+let updateFolder (solution : Solution) (path : string list) (updater : Folder -> Folder) =
+    let inline getNestedFolder (folders : Map<string, Folder>) (name : string) =
+        match folders.TryGetValue name with
+        | true, folder -> folder
+        | false, _ -> { id = Guid.NewGuid() ; name = name ; folders = Map.Empty ; projects = [] ; files = [] }
+
+    let inline insertFolder (folders : Map<string, Folder>) (folder : Folder) = folders.SetItem(folder.name, folder)
+
+    match path with
+    | [] -> failwith "internal error: updateFolder solution path cannot be empty"
+    | next :: rest ->
+        let rec aux (folder : Folder) path =
+            match path with
+            | [] -> updater folder
+            | next :: rest ->
+                let nested = getNestedFolder folder.folders next
+                let updated = aux nested rest
+                { folder with folders = insertFolder folder.folders updated }
+
+        let nested = getNestedFolder solution.folders next
+        let updated = aux nested rest
+        { solution with folders = insertFolder solution.folders updated }
+
+/// inserts a new project into existing solution tree
+let insertProject (config : Configuration) (sln : Solution) (project : Project) =
+    if config.flattenProjects || List.isEmpty project.logicalPath then
+        { sln with projects = project :: sln.projects }
+    else
+        updateFolder sln project.logicalPath (fun f -> { f with projects = project :: f.projects })
+
+/// inserts a new file into existing solution tree
+let insertFile (config : Configuration) (sln : Solution) (file : File) =
+    if config.flattenProjects then sln 
+    else
+        updateFolder sln file.logicalPath (fun f -> { f with files = file :: f.files})
+
+/// main function: creates a solution tree from given configuration set
+let createSolution (config : Configuration) =
+    let projects =
+        { BaseDirectory = config.baseDirectory
+          Includes = "**/*.??proj" :: config.projectIncludes
+          Excludes = config.projectExcludes }
+        |> Seq.toList
+
+    let files =
+        if config.flattenProjects || config.noFiles then []
+        else
+            // exclude files within project directories from solution items
+            let projectFileExcludes = 
+                projects 
+                |> Seq.map (fun p -> Path.GetDirectoryName p)
+                |> Seq.map (fun p -> Path.GetRelativePath(config.baseDirectory, p))
+                |> Seq.map (fun p -> p @@ "**/*")
+                |> Seq.toList
+
+            { BaseDirectory = config.baseDirectory
+              Includes = match config.fileIncludes with [] -> ["**/*"] | es -> es
+              Excludes = excludedFiles @ config.fileExcludes @ projectFileExcludes }
+            |> Seq.map (mkFile config)
+            |> Seq.toList
+
+    let allProjects =
+        if config.includeTransitiveProjects 
+        then getTransitiveClosure projects
+        else projects
+        |> List.map (mkProject config)
+
+    let mutable sln = mkSln()
+    for project in allProjects do sln <- insertProject config sln project
+    for file in files do sln <- insertFile config sln file
+    sln

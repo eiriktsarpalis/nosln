@@ -2,9 +2,21 @@
 module NoSln.Utils
 
 open System
+open System.Diagnostics
 open System.IO
 open System.Reflection
+open System.Runtime.InteropServices
 open Argu
+
+module Environment =
+
+    type Os = Windows | Mac | Linux | Unknown
+
+    let osPlatform =
+        if RuntimeInformation.IsOSPlatform OSPlatform.Windows then Windows
+        elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Mac
+        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then Linux
+        else Unknown
 
 module Assembly =
     let currentAssembly = Assembly.GetExecutingAssembly()
@@ -16,6 +28,7 @@ module Assembly =
 module Console =
 
     let log (msg : string) = Console.WriteLine msg
+    let logf fmt = Printf.ksprintf log fmt
 
     let logColor color (msg : string) =
         let currColor = Console.ForegroundColor
@@ -23,12 +36,7 @@ module Console =
         try Console.WriteLine msg
         finally Console.ForegroundColor <- currColor
 
-
-module Path =
-    let isCaseSensitiveFileSystem = 
-        // this is merely a heuristic, but should always work in practice
-        let tmp = Path.GetTempPath()
-        not(Directory.Exists(tmp.ToUpper()) && Directory.Exists(tmp.ToLower()))
+    let logfColor color fmt = Printf.ksprintf (logColor color) fmt
 
 type ColoredProcessExiter() =
     interface IExiter with
@@ -40,3 +48,23 @@ type ColoredProcessExiter() =
                 Console.logColor ConsoleColor.Red message
 
             exit(int code)
+
+module File =
+
+    let createOrReplace (path : string) (content : string) =
+        Fake.IO.Directory.ensure (Path.GetDirectoryName path)
+        let exists = File.Exists path
+        File.WriteAllText(path, content)
+        exists
+
+
+module Process =
+    
+    let executeFile (path : string) =
+        match Environment.osPlatform with
+        | Environment.Windows -> 
+            let psi = new ProcessStartInfo(path, UseShellExecute = true)
+            let _ = Process.Start psi
+            ()
+
+        | env -> raise <| NotImplementedException(sprintf "execution of sln files not yet implemented in %O environments" env)
