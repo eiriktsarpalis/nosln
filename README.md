@@ -1,8 +1,8 @@
 # dotnet-nosln
 
-Dotnet-NoSln (pronounced "Noslyn") is a small cli tool designed minimize the awkwardness of solution files.
-Instead of having to manually maintain solution files, nosln treats solution files as disposable, 
-auto-generated entities derived from a file system containing dotnet project files.
+dotnet-nosln (pronounced "noslyn") is a cli tool that generates solution files. 
+Designed to minimize the awkwardness of solution files, 
+nosln treats them as disposable, auto-generated entities deriving from the file system.
 
 To use nosln, simply navigate to your favorite repo and type
 ```
@@ -13,7 +13,7 @@ then immediately start Visual Studio using that particular solution file.
 
 Running
 ```
-$ dotnet nosln -Tf -I '**/*.Tests.??proj' -o tests.sln"
+$ dotnet nosln -TF -I '**/*.Tests.??proj' -o tests.sln"
 ```
 will create a solution file containing test projects only.
 
