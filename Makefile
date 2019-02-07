@@ -15,7 +15,7 @@ clean:
 
 build:
 	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=$(NUGET_VERSION) $(PROJECT_PATH)
-	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) dotnet-nosln --version $(NUGET_VERSION)
+	rm -rf $(TOOL_PATH) && dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) dotnet-nosln --version $(NUGET_VERSION)
 
 test: build
 	dotnet nosln -o nosln.sln

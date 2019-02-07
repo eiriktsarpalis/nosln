@@ -121,20 +121,33 @@ let insertFile (config : Configuration) (sln : Solution) (file : File) =
     else
         updateFolder sln file.logicalPath (fun f -> { f with files = file :: f.files})
 
+open Fake.IO.Globbing.Operators
 /// main function: creates a solution tree from given configuration set
 let createSolution (config : Configuration) =
+    let projectsUnderBaseDir = !! (config.baseDirectory @@ "**/*.??proj") |> Seq.toList
+
+    let projectsWithAppliedGlobPatterns =
+        match config.projectIncludes, config.projectExcludes with
+        | [], [] -> projectsUnderBaseDir
+        | includes, excludes ->
+            let pattern =
+                { BaseDirectory = config.baseDirectory
+                  Includes = includes
+                  Excludes = excludes }
+
+            projectsUnderBaseDir |> List.filter pattern.IsMatch
+
     let projects =
-        { BaseDirectory = config.baseDirectory
-          Includes = "**/*.??proj" :: config.projectIncludes
-          Excludes = config.projectExcludes }
-        |> Seq.toList
+        if config.noTransitiveProjects
+        then projectsWithAppliedGlobPatterns
+        else getTransitiveClosure projectsWithAppliedGlobPatterns
 
     let files =
-        if config.flattenProjects || config.noFiles then []
+        if config.noFiles then []
         else
             // exclude files within project directories from solution items
-            let projectFileExcludes = 
-                projects 
+            let projectFileExcludes =
+                projectsUnderBaseDir 
                 |> Seq.map (fun p -> Path.GetDirectoryName p)
                 |> Seq.map (fun p -> Path.GetRelativePath(config.baseDirectory, p))
                 |> Seq.map (fun p -> p @@ "**/*")
@@ -143,16 +156,17 @@ let createSolution (config : Configuration) =
             { BaseDirectory = config.baseDirectory
               Includes = match config.fileIncludes with [] -> ["**/*"] | es -> es
               Excludes = excludedFiles @ config.fileExcludes @ projectFileExcludes }
-            |> Seq.map (mkFile config)
             |> Seq.toList
 
-    let allProjects =
-        if config.includeTransitiveProjects 
-        then getTransitiveClosure projects
-        else projects
-        |> List.map (mkProject config)
+    if config.debug then
+        Console.logf "Using configuration %A" config
+        Console.logf "Projects %A" projects
+        Console.logf "Files %A" files
+
+    let parsedProjects = projects |> List.map (mkProject config)
+    let parsedFiles = files |> List.map (mkFile config)
 
     let mutable sln = mkSln()
-    for project in allProjects do sln <- insertProject config sln project
-    for file in files do sln <- insertFile config sln file
+    for project in parsedProjects do sln <- insertProject config sln project
+    for file in parsedFiles do sln <- insertFile config sln file
     sln

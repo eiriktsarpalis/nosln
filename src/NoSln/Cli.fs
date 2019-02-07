@@ -21,6 +21,7 @@ type Argument =
     | [<AltCommandLine("-s")>] Start
     | [<AltCommandLine("-q")>] Quiet
     | [<AltCommandLine("-t")>] Temp
+    | [<AltCommandLine("-D")>] Debug
 with
     interface IArgParserTemplate with
         member a.Usage =
@@ -34,11 +35,11 @@ with
             | Output _ ->
                 "Output solution file. Defaults to a solution file at the root of the supplied base directory."
             | Include_Projects _ ->
-                "Included project files globbing pattern. Multiple arguments are treated using AND semantics."
+                "Included project files globbing pattern. Multiple arguments are treated using OR semantics."
             | Exclude_Projects _ ->
                 "Excluded project files globbing pattern. Multiple arguments are treated using OR semantics."
             | Include_Files _ ->
-                "Included solution files globbing pattern. Multiple arguments are treated using AND semantics."
+                "Included solution files globbing pattern. Multiple arguments are treated using OR semantics."
             | Exclude_Files _ ->
                 "Excluded solution files globbing pattern. Multiple arguments are treated using OR semantics."
             | No_Files ->
@@ -56,6 +57,8 @@ with
                 "Creates a disposable solution file in the system temp folder. Overrides the --output argument. Also implies --absolute-paths."
             | Quiet ->
                 "Quiet mode, only output the file name of the generated solution to stdout. Useful for passing generated solution to shell scripts."
+            | Debug ->
+                "Generate debug logs. Overrides --quiet mode."
 
 let mkParser() = 
     ArgumentParser.Create<Argument>(
@@ -85,11 +88,12 @@ let processArguments (results : ParseResults<Argument>) =
     let fileIncludes = results.GetResults <@ Include_Files @>
     let fileExcludes = results.GetResults <@ Exclude_Files @>
     let noFiles = results.Contains <@ No_Files @>
-    let includeTransitive = results.Contains <@ No_Transitive_Projects @>
+    let noTransitive = results.Contains <@ No_Transitive_Projects @>
     let useAbsolutePaths = results.Contains <@ Absolute_Paths @>
     let flattenProjects = results.Contains <@ Flatten @>
     let tmpSln = results.Contains <@ Temp @>
     let quiet = results.Contains <@ Quiet @>
+    let debug = results.Contains <@ Debug @>
     let start =
         match results.Contains <@ Start @>, Environment.osPlatform with
         | false, _ -> false
@@ -113,12 +117,13 @@ let processArguments (results : ParseResults<Argument>) =
         targetSolutionFile = targetSln
         targetSolutionDir = Path.GetDirectoryName targetSln
 
-        noFiles = noFiles
-        includeTransitiveProjects = not includeTransitive
+        noFiles = noFiles || flattenProjects
+        noTransitiveProjects = not noTransitive
         useAbsolutePaths = useAbsolutePaths || tmpSln
         flattenProjects = flattenProjects
         start = start
-        quiet = quiet
+        quiet = quiet && not debug
+        debug = debug
     }
 
 

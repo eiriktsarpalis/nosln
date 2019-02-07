@@ -53,9 +53,10 @@ type Configuration =
         fileExcludes : string list        
 
         noFiles : bool
-        includeTransitiveProjects : bool
+        noTransitiveProjects : bool
         useAbsolutePaths : bool
         flattenProjects : bool
         start : bool
         quiet : bool
+        debug : bool
     }
