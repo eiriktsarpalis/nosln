@@ -18,9 +18,11 @@ build:
 	rm -rf $(TOOL_PATH) && dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) dotnet-nosln --version $(NUGET_VERSION)
 
 test: build
-	dotnet nosln -o nosln.sln
-	dotnet nosln tests/ -o $(ARTIFACT_PATH)/tests.sln
-	dotnet nosln src/ -o $(ARTIFACT_PATH)/src.sln
+	dotnet nosln -D -o nosln.sln
+	dotnet test
+	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
+	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
+	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
 
 install: build
 	dotnet tool install --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version $(NUGET_VERSION)

@@ -159,9 +159,9 @@ let createSolution (config : Configuration) =
             |> Seq.toList
 
     if config.debug then
-        Console.logf "Using configuration %A" config
-        Console.logf "Projects %A" projects
-        Console.logf "Files %A" files
+        Console.logf "Configuration: %A" config
+        Console.logf "Projects: %A" projects
+        Console.logf "Files: %A" files
 
     let parsedProjects = projects |> List.map (mkProject config)
     let parsedFiles = files |> List.map (mkFile config)

@@ -88,7 +88,7 @@ let processArguments (results : ParseResults<Argument>) =
     let fileIncludes = results.GetResults <@ Include_Files @>
     let fileExcludes = results.GetResults <@ Exclude_Files @>
     let noFiles = results.Contains <@ No_Files @>
-    let noTransitive = results.Contains <@ No_Transitive_Projects @>
+    let noTransitiveProjects = results.Contains <@ No_Transitive_Projects @>
     let useAbsolutePaths = results.Contains <@ Absolute_Paths @>
     let flattenProjects = results.Contains <@ Flatten @>
     let tmpSln = results.Contains <@ Temp @>
@@ -118,7 +118,7 @@ let processArguments (results : ParseResults<Argument>) =
         targetSolutionDir = Path.GetDirectoryName targetSln
 
         noFiles = noFiles || flattenProjects
-        noTransitiveProjects = not noTransitive
+        noTransitiveProjects = noTransitiveProjects
         useAbsolutePaths = useAbsolutePaths || tmpSln
         flattenProjects = flattenProjects
         start = start
