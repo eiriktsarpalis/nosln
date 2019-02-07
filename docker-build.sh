@@ -9,16 +9,10 @@ docker build -t $IMAGE_LABEL .
 
 # dotnet build, test & nuget publish
 docker run --name $CONTAINER_NAME \
-           -e NUGET_API_KEY=$NUGET_API_KEY \
+           -e NUGET_API_KEY=$NUGET_KEY \
            -e TARGETS=$TARGETS \
 		   $IMAGE_LABEL
 
 exit_code=$?
-
-# copy artifacts locally
-docker cp $CONTAINER_NAME:/app/artifacts/ .
-
-# clean up
-docker rm -f $CONTAINER_NAME
 
 exit $exit_code
