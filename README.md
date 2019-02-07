@@ -13,16 +13,17 @@ then immediately start Visual Studio using that particular solution file.
 
 Running
 ```
-$ dotnet nosln -TF -I '**/*Tests*' -o tests.sln"
+$ dotnet nosln -TF -I '**/*Tests*' -o tests.sln
 ```
 will create a solution file containing test projects only.
 
 ## Building & Installing
 
-To install nosln on your machine, you need to clone the repo and run
+To install nosln on your machine, just clone the repo and run
 ```
 make install
 ```
+GNU make is required.
 
 ## More arguments
 
