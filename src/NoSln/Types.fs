@@ -8,6 +8,7 @@ type Map<'K,'V> = System.Collections.Immutable.ImmutableDictionary<'K,'V>
 
 type Solution =
     {
+        id : Guid
         folders : Map<string, Folder>
         projects : Project list
     }

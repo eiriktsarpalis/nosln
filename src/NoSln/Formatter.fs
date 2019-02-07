@@ -9,7 +9,6 @@ let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
 let private formatSolutionFileLines (solution : Solution) = seq {
     let fmtGuid (g:Guid) = g.ToString().ToUpper()
 
-    yield ""
     yield "Microsoft Visual Studio Solution File, Format Version 12.00"
     yield "# Visual Studio 15"
     yield "VisualStudioVersion = 15.0.27428.2002"
@@ -34,7 +33,7 @@ let private formatSolutionFileLines (solution : Solution) = seq {
         | [] -> ()
         | files ->
             yield "\tProjectSection(SolutionItems) = preProject"
-            for file in files do yield sprintf "\t\t%s = %s" file.id file.path
+            for file in files |> Seq.sortBy (fun f -> f.id.ToLowerInvariant()) do yield sprintf "\t\t%s = %s" file.id file.path
             yield "\tEndProjectSection"
 
         yield "EndProject"
@@ -72,8 +71,16 @@ let private formatSolutionFileLines (solution : Solution) = seq {
         yield fmt "Release" "Any CPU" "Build.0"
     yield "\tEndGlobalSection"
 
+    yield "\tGlobalSection(SolutionProperties) = preSolution"
+    yield "\t\tHideSolutionNode = FALSE"
+    yield "\tEndGlobalSection"
+
     yield "\tGlobalSection(NestedProjects) = preSolution"
     for child,parent in nestedNodes do yield sprintf "\t\t{%s} = {%s}" (fmtGuid child) (fmtGuid parent)
+    yield "\tEndGlobalSection"
+
+    yield "\tGlobalSection(ExtensibilityGlobals) = postSolution"
+    yield sprintf "\t\tSolutionGuid = {%s}"(fmtGuid solution.id)
     yield "\tEndGlobalSection"
 
     yield "EndGlobal"

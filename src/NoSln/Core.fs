@@ -33,7 +33,7 @@ let getLogicalPath (config : Configuration) (fullPath : string) =
     | path -> path
 
 /// creates an empty solution folder
-let mkSln() : Solution = { folders = Map.Empty ; projects = [] }
+let mkSln() : Solution = { id = Guid.NewGuid() ; folders = Map.Empty ; projects = [] }
 
 /// creates a new project node from project file path
 let mkProject (config : Configuration) (fullPath : string) : Project =
