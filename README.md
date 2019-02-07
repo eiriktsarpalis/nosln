@@ -11,6 +11,12 @@ $ dotnet nosln --start
 This will will automatically generate a solution file based on the folder structure in your current directory,
 then immediately start Visual Studio using that particular solution file.
 
+Running
+```
+$ dotnet nosln -FTf -I '**/*.Tests.??proj' -o tests.sln"
+```
+will create a solution file containing test projects only.
+
 ## Building & Installing
 
 To install nosln on your machine, you need to clone the repo and run
