@@ -17,7 +17,7 @@ let rootFilesFolder = ["Solution Items"]
 /// solution folder used for transitive p2p dependencies that are outside the base directory
 let transitiveProjectsFolder : string list = [".external"]
 /// files to be always excluded from globbing
-let excludedFiles = [ "**/.vs/**/*" ; "**/.git/**/*" ; "**/.store/**/*" ]
+let excludedFiles = [ "**/.vs/**/*" ; "**/.idea/**/*" ; "**/.git/**/*" ; "**/.store/**/*" ]
 
 /// gets the file path to be used within the solution file
 let getFilePath (config : Configuration) (fullPath : string) =

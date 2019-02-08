@@ -53,7 +53,7 @@ with
             | Flatten ->
                 "Places all projects at the root of the solution file without replicating the filesystem structure. Also implies --no-files."
             | Start ->
-                "For windows or mac systems, starts an IDE process with the newly generated solution file."
+                "Starts an IDE process with the newly generated solution file. Uses 'start' command on Windows, 'open' on OSX, 'xdg-open' on Linux."
             | Temp ->
                 "Creates a disposable solution file in the system temp folder. Overrides the --output argument. Also implies --absolute-paths."
             | Quiet ->
@@ -96,11 +96,7 @@ let processArguments (results : ParseResults<Argument>) =
     let tmpSln = results.Contains <@ Temp @>
     let quiet = results.Contains <@ Quiet @>
     let debug = results.Contains <@ Debug @>
-    let start =
-        let start = results.Contains <@ Start @>
-        if start && not Process.isFileExecutionSupported then
-            failwithf "argument --start not supported in %A environments" Environment.osPlatform
-        start
+    let start = results.Contains <@ Start @>
 
     let targetSln =
         if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")

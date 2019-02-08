@@ -17,12 +17,12 @@ module Assembly =
 
 module Environment =
 
-    type Os = Windows | Mac | Linux | Unknown
+    type Os = Windows | OSX | Linux | Unknown
 
     let osPlatform =
         if RuntimeInformation.IsOSPlatform OSPlatform.Windows then Windows
         elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Linux
-        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then Mac
+        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then OSX
         else Unknown
 
 module Console =
@@ -59,7 +59,7 @@ module Path =
         | Environment.Windows 
         | Environment.Unknown -> Path.GetFullPath path
         | Environment.Linux
-        | Environment.Mac -> 
+        | Environment.OSX -> 
             // not working properly on unices with backslash paths
             Path.GetFullPath(toForwardSlashSeparators path)
 
@@ -73,12 +73,6 @@ module File =
 
 
 module Process =
-
-    let isFileExecutionSupported =
-        match Environment.osPlatform with
-        | Environment.Windows
-        | Environment.Mac -> true
-        | _ -> false
     
     let executeFile (path : string) =
         match Environment.osPlatform with
@@ -87,8 +81,13 @@ module Process =
             let _ = Process.Start psi
             ()
 
-        | Environment.Mac ->
+        | Environment.OSX ->
             let psi = new ProcessStartInfo("open", path)
+            let _ = Process.Start psi
+            ()
+            
+        | Environment.Linux ->
+            let psi = new ProcessStartInfo("xdg-open", path)
             let _ = Process.Start psi
             ()
 
