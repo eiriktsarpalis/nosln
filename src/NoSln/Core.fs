@@ -25,6 +25,7 @@ let getFilePath (config : Configuration) (fullPath : string) =
         if config.useAbsolutePaths then fullPath
         else Path.GetRelativePath(config.targetSolutionDir, fullPath)
 
+    // Paths in solution file always separated by backslash, regardless of OS
     Path.toBackSlashSeparators path
 
 /// extracts the solution path (i.e. location of item within nested logical folders) from a given filesystem full path
