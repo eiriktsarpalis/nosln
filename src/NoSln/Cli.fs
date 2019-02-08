@@ -53,7 +53,7 @@ with
             | Flatten ->
                 "Places all projects at the root of the solution file without replicating the filesystem structure. Also implies --no-files."
             | Start ->
-                "For windows systems, starts a Visual Studio process with the newly generated solution file."
+                "For windows or mac systems, starts an IDE process with the newly generated solution file."
             | Temp ->
                 "Creates a disposable solution file in the system temp folder. Overrides the --output argument. Also implies --absolute-paths."
             | Quiet ->

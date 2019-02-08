@@ -1,7 +1,6 @@
 ﻿module NoSln.Formatter
 
 open System
-open Fake.IO
 
 let private projectGuid = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
 let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
@@ -75,15 +74,17 @@ let private formatSolutionFileLines (solution : Solution) = seq {
     yield "\t\tHideSolutionNode = FALSE"
     yield "\tEndGlobalSection"
 
-    yield "\tGlobalSection(NestedProjects) = preSolution"
-    for child,parent in nestedNodes do yield sprintf "\t\t{%s} = {%s}" (fmtGuid child) (fmtGuid parent)
-    yield "\tEndGlobalSection"
+    if nestedNodes.Count > 0 then
+        yield "\tGlobalSection(NestedProjects) = preSolution"
+        for child,parent in nestedNodes do yield sprintf "\t\t{%s} = {%s}" (fmtGuid child) (fmtGuid parent)
+        yield "\tEndGlobalSection"
 
     yield "\tGlobalSection(ExtensibilityGlobals) = postSolution"
     yield sprintf "\t\tSolutionGuid = {%s}"(fmtGuid solution.id)
     yield "\tEndGlobalSection"
 
     yield "EndGlobal"
+    yield ""
 }
 
 /// Formats a solution tree into a solution file text
