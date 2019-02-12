@@ -34,9 +34,9 @@ install: build
 uninstall:
 	dotnet tool uninstall -g dotnet-nosln
 
-push: build
+push: test
 	dotnet nuget push `ls $(ARTIFACT_PATH)/*.nupkg` -s $(NUGET_SOURCE) -k $(NUGET_API_KEY)
 
-all: build test
+all: test
 
 .DEFAULT_GOAL := build
