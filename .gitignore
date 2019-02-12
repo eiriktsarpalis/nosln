@@ -330,5 +330,5 @@ ASALocalRun/
 .mfractor/
 
 .store/
-tools/
+/tools/
 *.sln
