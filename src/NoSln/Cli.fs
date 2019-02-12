@@ -15,6 +15,7 @@ type Argument =
     | [<AltCommandLine("-E")>] Exclude_Projects of pattern:string
     | [<AltCommandLine("-i")>] Include_Files of pattern:string
     | [<AltCommandLine("-e")>] Exclude_Files of pattern:string
+    | [<AltCommandLine("-G")>] No_Git_Ignore
     | [<AltCommandLine("-F")>] No_Files
     | [<AltCommandLine("-T")>] No_Transitive_Projects
     | [<AltCommandLine("-a")>] Absolute_Paths
@@ -43,6 +44,8 @@ with
                 "Included solution files globbing pattern. Multiple arguments are treated using OR semantics."
             | Exclude_Files _ ->
                 "Excluded solution files globbing pattern. Multiple arguments are treated using OR semantics."
+            | No_Git_Ignore ->
+                "Do not take .gitignore files into account when excluding files."
             | No_Files ->
                 "Do not include any solution items in the generated solution."
             | No_Transitive_Projects ->
@@ -97,6 +100,10 @@ let processArguments (results : ParseResults<Argument>) =
     let quiet = results.Contains <@ Quiet @>
     let debug = results.Contains <@ Debug @>
     let start = results.Contains <@ Start @>
+    let gitIgnoreFile =
+        if results.Contains <@ No_Git_Ignore @> then None
+        else
+            GitIgnore.tryFindGitIgnoreFile baseDirectory
 
     let targetSln =
         if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")
@@ -111,6 +118,7 @@ let processArguments (results : ParseResults<Argument>) =
         projectExcludes = projectExcludes
         fileIncludes = fileIncludes
         fileExcludes = fileExcludes
+        gitIgnoreFile = gitIgnoreFile
         
         targetSolutionFile = targetSln
         targetSolutionDir = Path.GetDirectoryName targetSln

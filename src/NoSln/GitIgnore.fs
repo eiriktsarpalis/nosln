@@ -1,0 +1,56 @@
+﻿module NoSln.GitIgnore
+
+open System
+open System.IO
+open Fake.IO.Globbing
+
+let rec tryFindGitIgnoreFile (path : string) =
+    let candidate = Path.Combine(path, ".gitignore")
+    if File.Exists candidate then Some candidate
+    else
+        match Path.GetDirectoryName path with
+        | null -> None
+        | parent -> tryFindGitIgnoreFile parent
+
+// converts a .gitignore file to a globbing representation
+// poor man's .gitignore parser, improvements welcome
+// https://git-scm.com/docs/gitignore
+let parse (gitIgnoreFile : string) =
+    let baseDir = Path.GetDirectoryName gitIgnoreFile
+
+    let parseEntry (entry : string) =
+        let isNegation, entry =
+            if entry.StartsWith "!" then
+                true, entry.TrimStart '!'
+            elif entry.StartsWith "\!" then
+                false, entry.TrimStart '\\'
+            else
+                false, entry
+
+        let entry =
+            if entry.StartsWith "/" || entry.StartsWith "\\" then
+                entry.TrimStart('/', '\\')
+            else
+                Path.Combine("**", entry)
+
+        let entry =
+            if entry.EndsWith "/" || entry.EndsWith "\\" then
+                Path.Combine(entry, "**/*")
+            else
+                entry
+            
+        isNegation, Path.toForwardSlashSeparators entry
+
+    let ignorePatterns = 
+        File.ReadLines(gitIgnoreFile)
+        |> Seq.map (fun l -> l.Trim())
+        |> Seq.filter (not << String.IsNullOrWhiteSpace)
+        |> Seq.map parseEntry
+        |> Seq.choose (fun (neg,entry) -> if not neg then Some entry else None) // we sadly won't support negation patterns for now
+        |> Seq.toList
+
+    {
+        BaseDirectory = baseDir
+        Includes = ["**/*"]
+        Excludes = ignorePatterns
+    }

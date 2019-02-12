@@ -9,6 +9,7 @@ open System.Text.RegularExpressions
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing
+open Fake.IO.Globbing.Operators
 
 open NoSln
 
@@ -125,7 +126,6 @@ let insertFile (config : Configuration) (sln : Solution) (file : File) =
     else
         updateFolder sln file.logicalPath (fun f -> { f with files = file :: f.files})
 
-open Fake.IO.Globbing.Operators
 /// main function: creates a solution tree from given configuration set
 let createSolution (config : Configuration) =
     let projectsUnderBaseDir = !! (config.baseDirectory @@ "**/*.??proj") |> Seq.toList
@@ -157,10 +157,18 @@ let createSolution (config : Configuration) =
                 |> Seq.map (fun p -> p @@ "**/*")
                 |> Seq.toList
 
-            { BaseDirectory = config.baseDirectory
-              Includes = match config.fileIncludes with [] -> ["**/*"] | es -> es
-              Excludes = excludedFiles @ config.fileExcludes @ projectFileExcludes }
-            |> Seq.toList
+            let cliFileIncludes =
+                { BaseDirectory = config.baseDirectory
+                  Includes = match config.fileIncludes with [] -> ["**/*"] | es -> es
+                  Excludes = excludedFiles @ config.fileExcludes @ projectFileExcludes }
+
+            let gitIgnorePatterns = config.gitIgnoreFile |> Option.map GitIgnore.parse
+
+            match gitIgnorePatterns with
+            | None -> Seq.toList cliFileIncludes
+            | Some g -> 
+                // we apply .gitignore as a separate globbing pattern as relative paths might be different
+                cliFileIncludes |> Seq.filter g.IsMatch |> Seq.toList
 
     if config.debug then
         Console.logf "Configuration: %A" config

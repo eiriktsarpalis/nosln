@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="GitIgnore.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="Formatter.fs" />
     <Compile Include="Cli.fs" />

@@ -49,6 +49,7 @@ type Configuration =
 
         projectIncludes : string list
         projectExcludes : string list
+        gitIgnoreFile : string option
         fileIncludes : string list
         fileExcludes : string list        
 
