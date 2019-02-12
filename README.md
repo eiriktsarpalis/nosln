@@ -11,6 +11,8 @@ $ dotnet nosln --start
 This will will automatically generate a solution file based on the folder structure in your current directory,
 then immediately start Visual Studio using that particular solution file.
 
+It will also include any solution items that happen to exist in the particular folder hierarchy, respecting any `.gitignore` files that happen to exist in the repo.
+
 Running
 ```
 $ dotnet nosln -TF -I '**/*Tests*' -o tests.sln
