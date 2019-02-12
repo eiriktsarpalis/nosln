@@ -18,6 +18,16 @@ let rec tryFindGitIgnoreFile (path : string) =
 let parse (gitIgnoreFile : string) =
     let baseDir = Path.GetDirectoryName gitIgnoreFile
 
+    let stripComments (entry : string) =
+        let rec aux (s : int) (entry : string) =
+            match entry.IndexOf('#', s) with
+            | -1 -> entry
+            |  0 -> ""
+            | i when entry.[i - 1] = '\\' -> aux (i + 1) entry // ignore escapes
+            | i -> entry.[.. i - 1]
+
+        aux 0 entry
+
     let parseEntry (entry : string) =
         let isNegation, entry =
             if entry.StartsWith "!" then
@@ -43,7 +53,7 @@ let parse (gitIgnoreFile : string) =
 
     let ignorePatterns = 
         File.ReadLines(gitIgnoreFile)
-        |> Seq.map (fun l -> l.Trim())
+        |> Seq.map stripComments
         |> Seq.filter (not << String.IsNullOrWhiteSpace)
         |> Seq.map parseEntry
         |> Seq.choose (fun (neg,entry) -> if not neg then Some entry else None) // we sadly won't support negation patterns for now
