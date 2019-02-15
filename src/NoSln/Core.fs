@@ -5,7 +5,7 @@
 open System
 open System.Collections.Generic
 open System.IO
-open System.Text.RegularExpressions
+open System.Xml.Linq
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing
@@ -64,17 +64,16 @@ let mkFile (config : Configuration) (fullPath : string) : File =
 
 /// Calculates the transitive closure of project-2-project references
 let getTransitiveClosure (projects : seq<string>) =
-    // TODO replace with `dotnet list reference`
-    let p2pRegex = Regex("""<\s*ProjectReference\s+Include\s*=\s*"(.+)"\s*/?>""")
     let getProjectReferences (proj:string) =
         let projectDir = Path.GetDirectoryName proj
-        let xml = File.ReadAllText proj
+        let xdoc = XDocument.Load proj
 
-        p2pRegex.Matches(xml) 
-        |> Seq.cast<Match> 
-        |> Seq.map (fun m -> m.Groups.[1].Value)
-        |> Seq.map (fun r -> projectDir @@ r)
-        |> Seq.map Path.getFullPath
+        xdoc.Root.Descendants(XName.op_Implicit "ProjectReference")
+        |> Seq.map (fun n -> n.Attribute(XName.op_Implicit "Include").Value)
+        |> Seq.map (fun r ->
+            let fullPath = Path.GetFullPath(projectDir @@ r)
+            if File.Exists fullPath then fullPath
+            else failwithf "project %A contains p2p reference %A which was not found" proj r)
         |> Seq.toArray
 
     let remaining = Queue projects
