@@ -5,15 +5,21 @@ open System
 let private csProjGuid = Guid.Parse "9A19103F-16F7-4668-BE54-9A1E7A4F7556"
 let private vbProjGuid = Guid.Parse "778DAE3C-4631-46EA-AA77-85C1314464D9"
 let private fsprojGuid = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
+//---------------------
+let private csProjGuidLegacy = Guid.Parse "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"
+let private vbProjGuidLegacy = Guid.Parse "F184B08F-C81C-45F6-A57F-5ABD9991F28F"
+let private fsprojGuidLegacy = Guid.Parse "F2A71F9B-5D33-465A-A702-920D77279786"
+//---------------------
+let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
 
 let getProjectGuid (proj : Project) =
+    // we use the legacy guids for backward compatibility
     match proj.projectType with
-    | CsProj -> csProjGuid
-    | VbProj -> vbProjGuid
-    | FsProj -> fsprojGuid
-    | Unrecognized -> csProjGuid // just pick something
+    | CsProj -> csProjGuidLegacy
+    | VbProj -> vbProjGuidLegacy
+    | FsProj -> fsprojGuidLegacy
+    | Unrecognized -> csProjGuidLegacy // just pick something
 
-let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
 
 let private formatSolutionFileLines (solution : Solution) = seq {
     let fmtGuid (g:Guid) = g.ToString().ToUpper()

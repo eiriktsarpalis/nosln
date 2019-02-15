@@ -52,9 +52,9 @@ let mkProject (config : Configuration) (fullPath : string) : Project =
 
     let projType =
         match Path.GetExtension(fullPath).ToLower() with
-        | "fsproj" -> FsProj
-        | "csproj" -> CsProj
-        | "vbproj" -> VbProj
+        | ".fsproj" -> FsProj
+        | ".csproj" -> CsProj
+        | ".vbproj" -> VbProj
         | _ -> Unrecognized
 
     { id = Guid.NewGuid() ; projectType = projType ; name = name ; path = path ; logicalPath = logicalPath ; fullPath = fullPath }
@@ -75,7 +75,8 @@ let getTransitiveClosure (projects : seq<string>) =
         let projectDir = Path.GetDirectoryName proj
         let xdoc = XDocument.Load proj
 
-        xdoc.Root.Descendants(XName.op_Implicit "ProjectReference")
+        xdoc.Root.Descendants()
+        |> Seq.filter (fun n -> n.Name.LocalName = "ProjectReference")
         |> Seq.map (fun n -> n.Attribute(XName.op_Implicit "Include").Value)
         |> Seq.map (fun r ->
             let fullPath = Path.getFullPathXPlat(projectDir @@ r)
