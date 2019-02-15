@@ -2,7 +2,17 @@
 
 open System
 
-let private projectGuid = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
+let private csProjGuid = Guid.Parse "9A19103F-16F7-4668-BE54-9A1E7A4F7556"
+let private vbProjGuid = Guid.Parse "778DAE3C-4631-46EA-AA77-85C1314464D9"
+let private fsprojGuid = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
+
+let getProjectGuid (proj : Project) =
+    match proj.projectType with
+    | CsProj -> csProjGuid
+    | VbProj -> vbProjGuid
+    | FsProj -> fsprojGuid
+    | Unrecognized -> csProjGuid // just pick something
+
 let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
 
 let private formatSolutionFileLines (solution : Solution) = seq {
@@ -19,7 +29,7 @@ let private formatSolutionFileLines (solution : Solution) = seq {
     let fmtProject (project : Project) = seq {
         projects.Add project.id
         yield sprintf """Project("{%s}") = "%s", "%s", "{%s}" """
-                    (fmtGuid projectGuid) project.name project.path (fmtGuid project.id)
+                    (fmtGuid (getProjectGuid project)) project.name project.path (fmtGuid project.id)
 
         yield "EndProject"
     }

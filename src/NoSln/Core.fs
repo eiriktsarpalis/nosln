@@ -50,7 +50,14 @@ let mkProject (config : Configuration) (fullPath : string) : Project =
         | ".." :: _ -> transitiveProjectsFolder
         | p -> List.take (p.Length - 1) p // do not include project folders in logical paths
 
-    { id = Guid.NewGuid() ; name = name ; path = path ; logicalPath = logicalPath ; fullPath = fullPath }
+    let projType =
+        match Path.GetExtension(fullPath).ToLower() with
+        | "fsproj" -> FsProj
+        | "csproj" -> CsProj
+        | "vbproj" -> VbProj
+        | _ -> Unrecognized
+
+    { id = Guid.NewGuid() ; projectType = projType ; name = name ; path = path ; logicalPath = logicalPath ; fullPath = fullPath }
 
 /// creates a new file node from file path
 let mkFile (config : Configuration) (fullPath : string) : File =

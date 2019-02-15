@@ -4,7 +4,7 @@ open System
 
 type Map<'K,'V> = System.Collections.Immutable.ImmutableDictionary<'K,'V>
 
-// Simplified tree structure representing a solution file
+// Simplistic tree structure representing a solution file
 
 type Solution =
     {
@@ -22,10 +22,17 @@ type Folder =
         files : File list
     }
 
+type ProjectType =
+    | CsProj
+    | VbProj
+    | FsProj
+    | Unrecognized
+
 type Project =
     {
         id : Guid
         name : string
+        projectType : ProjectType
         path : string // sln relative path
         fullPath : string // fully qualified filesystem path
         logicalPath : string list // logical solution path
