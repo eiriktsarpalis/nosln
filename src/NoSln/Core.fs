@@ -78,7 +78,7 @@ let getTransitiveClosure (projects : seq<string>) =
         xdoc.Root.Descendants(XName.op_Implicit "ProjectReference")
         |> Seq.map (fun n -> n.Attribute(XName.op_Implicit "Include").Value)
         |> Seq.map (fun r ->
-            let fullPath = Path.GetFullPath(projectDir @@ r)
+            let fullPath = Path.getFullPathXPlat(projectDir @@ r)
             if File.Exists fullPath then fullPath
             else failwithf "project %A contains p2p reference %A which was not found" proj r)
         |> Seq.toArray

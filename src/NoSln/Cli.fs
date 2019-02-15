@@ -79,7 +79,7 @@ let processArguments (results : ParseResults<Argument>) =
 
     let baseDirectory =
         let validate (path : string) =
-            let fullPath = Path.getFullPath path
+            let fullPath = Path.getFullPathXPlat path
             if Directory.Exists fullPath then fullPath
             elif Regex.IsMatch(fullPath, "\...proj") && File.Exists path then Path.GetDirectoryName fullPath
             else failwithf "supplied project path %A is not a valid directory or project file." path
@@ -109,7 +109,7 @@ let processArguments (results : ParseResults<Argument>) =
         if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")
         else
             match results.TryGetResult <@ Output @> with
-            | Some o -> Path.getFullPath o
+            | Some o -> Path.getFullPathXPlat o
             | None -> baseDirectory @@ Path.GetFileName baseDirectory + ".sln"
 
     GenerateSln {

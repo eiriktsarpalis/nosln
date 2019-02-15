@@ -54,7 +54,7 @@ module Path =
     let toForwardSlashSeparators (path : string) = path.Replace('\\', '/')
     
     /// works around Path.GetFullPath issues running on unix
-    let getFullPath (path : string) =
+    let getFullPathXPlat (path : string) =
         match Environment.osPlatform with
         | Environment.Windows 
         | Environment.Unknown -> Path.GetFullPath path
