@@ -6,6 +6,8 @@ open TypeShape.Empty
 open Swensen.Unquote.Assertions
 open NoSln
 
+TypeShape.Empty.register (fun () -> Unchecked.defaultof<System.Xml.Linq.XDocument>)
+
 let mkProj name logicalPath = { empty<Project> with name = name ; logicalPath = logicalPath }
 let mkFile name logicalPath = { empty<File> with id = name ; logicalPath = logicalPath }
 
