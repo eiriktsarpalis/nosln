@@ -1,6 +1,7 @@
 ﻿namespace rec NoSln
 
 open System
+open System.Xml.Linq
 
 type Map<'K,'V> = System.Collections.Immutable.ImmutableDictionary<'K,'V>
 
@@ -26,13 +27,18 @@ type ProjectType =
     | CsProj
     | VbProj
     | FsProj
+    | CsProjLegacy
+    | VbProjLegacy
+    | FsProjLegacy
     | Unrecognized
 
 type Project =
     {
         id : Guid
         name : string
+        content : XDocument
         projectType : ProjectType
+        p2pReferences : string list
         path : string // sln relative path
         fullPath : string // fully qualified filesystem path
         logicalPath : string list // logical solution path

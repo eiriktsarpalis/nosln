@@ -15,9 +15,12 @@ let private directoryGuid = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
 let getProjectGuid (proj : Project) =
     // we use the legacy guids for backward compatibility
     match proj.projectType with
-    | CsProj -> csProjGuidLegacy
-    | VbProj -> vbProjGuidLegacy
-    | FsProj -> fsprojGuidLegacy
+    | CsProj -> csProjGuid
+    | VbProj -> vbProjGuid
+    | FsProj -> fsprojGuid
+    | CsProjLegacy -> csProjGuidLegacy
+    | VbProjLegacy -> vbProjGuidLegacy
+    | FsProjLegacy -> fsprojGuidLegacy
     | Unrecognized -> csProjGuidLegacy // just pick something
 
 
