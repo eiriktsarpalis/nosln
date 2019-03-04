@@ -106,7 +106,14 @@ let processArguments (results : ParseResults<Argument>) =
             GitIgnore.tryFindGitIgnoreFile baseDirectory
 
     let targetSln =
-        if tmpSln then Path.GetTempPath() @@ Path.ChangeExtension(Path.GetTempFileName(), ".sln")
+        if tmpSln then
+            // use random solution file in temp directory
+            let fileName = 
+                let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
+                let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
+                sprintf "%s-%s.sln" slnIdentifier randomSuffix
+
+            Path.GetTempPath() @@ fileName
         else
             match results.TryGetResult <@ Output @> with
             | Some o -> Path.getFullPathXPlat o
