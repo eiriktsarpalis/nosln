@@ -53,6 +53,8 @@ module Path =
     let toBackSlashSeparators (path : string) = path.Replace('/', '\\')
     let toForwardSlashSeparators (path : string) = path.Replace('\\', '/')
     
+    let trimTrailingSlashes (path : string) = path.TrimEnd('/', '\\')
+
     /// works around Path.GetFullPath issues running on unix
     let getFullPathXPlat (path : string) =
         match Environment.osPlatform with
@@ -61,7 +63,8 @@ module Path =
         | Environment.Linux
         | Environment.OSX -> 
             // not working properly on unices with backslash paths
-            Path.GetFullPath(toForwardSlashSeparators path)
+            Path.GetFullPath(toForwardSlashSeparators path) 
+        |> trimTrailingSlashes
 
 module File =
 
