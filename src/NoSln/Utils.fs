@@ -95,3 +95,62 @@ module Process =
             ()
 
         | env -> raise <| NotImplementedException(sprintf "execution of sln files not yet implemented in %O environments" env)
+
+
+/// Directed graph representation
+type Graph<'T> = ('T * 'T list) list
+
+module Graph =
+
+    /// <summary>
+    ///     Maps directed graph to isomorphic instance of relabeled nodes.
+    /// </summary>
+    /// <param name="f">Mapper function.</param>
+    /// <param name="graph">Input graph.</param>
+    let map (f : 'T -> 'S) (graph : Graph<'T>) : Graph<'S> =
+        graph |> List.map (fun (n, edges) -> f n, List.map f edges)
+
+    /// <summary>
+    ///     Filters nodes (and adjacent edges) that satisfy the provided predicate.
+    /// </summary>
+    /// <param name="f">Node filter function.</param>
+    /// <param name="graph">Input directed graph.</param>
+    let filterNode (f : 'T -> bool) (graph : Graph<'T>) : Graph<'T> =
+        graph |> List.choose(fun (n, edges) -> if f n then Some(n, List.filter f edges) else None)
+
+    /// <summary>
+    ///     Filters directed edges from graph that satisfy provided predicate.
+    /// </summary>
+    /// <param name="f">Directed edge filter predicate.</param>
+    /// <param name="graph">Input directed graph.</param>
+    let filterEdge (f : 'T -> 'T -> bool) (graph : Graph<'T>) : Graph<'T> =
+        graph |> List.map (fun (n, edges) -> (n, List.filter (fun e -> f n e) edges))
+
+    /// Attempt to compute a topological sorting for graph if DAG,
+    /// If not DAG returns a cycle within the graph for further debugging.
+    let tryGetTopologicalOrdering<'T when 'T : equality> (g : Graph<'T>) : Result<'T list, 'T list> =
+        let locateCycle (g : Graph<'T>) =
+            let d = dict g
+            let rec tryFindCycleInPath (path : 'T list) (acc : 'T list) (t : 'T) =
+                match path with
+                | [] -> None
+                | h :: _ when h = t -> Some (h :: acc)
+                | h :: tl -> tryFindCycleInPath tl (h :: acc) t
+
+            let rec walk (path : 'T list) (t : 'T) =
+                match tryFindCycleInPath path [] t with
+                | Some _ as cycle -> cycle
+                | None -> d.[t] |> List.tryPick (walk (t :: path))
+
+            g |> List.head |> fst |> walk [] |> Option.get
+
+        let rec aux sorted (g : Graph<'T>) =
+            if List.isEmpty g then Ok (List.rev sorted) else
+
+            match g |> List.tryFind (function (_,[]) -> true | _ -> false) with
+            | None -> Error (locateCycle g) // not a DAG, detect and report a cycle in graph
+            | Some (t,_) ->
+                let g0 = g |> filterNode ((<>) t)
+                aux (t :: sorted) g0
+
+        aux [] g

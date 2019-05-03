@@ -25,6 +25,28 @@ let getProjectGuid (proj : Project) =
 
 
 let private formatSolutionFileLines (solution : Solution) = seq {
+    // flatten the solution structure into a list of guid relations
+    let projects = ResizeArray<Project>()
+    let folders = ResizeArray<Folder>()
+    let nestedNodes = ResizeArray<Guid * Guid>()
+
+    let rec visitProject (project : Project) =
+        projects.Add project
+
+    and visitFolder (folder : Folder) =
+        folders.Add folder
+        for proj in folder.projects do 
+            nestedNodes.Add(proj.id, folder.id)
+            visitProject proj
+
+        for f in folder.folders.Values do 
+            nestedNodes.Add(f.id, folder.id)
+            visitFolder f
+
+    for proj in solution.projects do visitProject proj
+    for folder in solution.folders.Values do visitFolder folder
+
+    // begin formatting
     let fmtGuid (g:Guid) = g.ToString().ToUpper()
 
     yield "Microsoft Visual Studio Solution File, Format Version 12.00"
@@ -32,18 +54,14 @@ let private formatSolutionFileLines (solution : Solution) = seq {
     yield "VisualStudioVersion = 15.0.27428.2002"
     yield "MinimumVisualStudioVersion = 10.0.40219.1"
 
-    let projects = ResizeArray<Guid>()
-    let nestedNodes = ResizeArray<Guid * Guid>()
-
     let fmtProject (project : Project) = seq {
-        projects.Add project.id
         yield sprintf """Project("{%s}") = "%s", "%s", "{%s}" """
                     (fmtGuid (getProjectGuid project)) project.name project.path (fmtGuid project.id)
 
         yield "EndProject"
     }
 
-    let rec fmtFolder (folder : Folder) = seq {
+    let fmtFolder (folder : Folder) = seq {
         yield sprintf """Project("{%s}") = "%s", "%s", "{%s}" """
                 (fmtGuid directoryGuid) folder.name folder.name (fmtGuid folder.id)
 
@@ -55,18 +73,12 @@ let private formatSolutionFileLines (solution : Solution) = seq {
             yield "\tEndProjectSection"
 
         yield "EndProject"
-
-        for proj in folder.projects do 
-            yield! fmtProject proj
-            nestedNodes.Add(proj.id, folder.id)
-
-        for f in folder.folders.Values do
-            yield! fmtFolder f
-            nestedNodes.Add(f.id, folder.id)
     }
 
-    for proj in solution.projects do yield! fmtProject proj
-    for folder in solution.folders.Values do yield! fmtFolder folder
+    // Need to topologically sort when formatting projects in solution,
+    // otherwise we get this https://github.com/dotnet/cli/issues/10484
+    for proj in Core.getTopologicalOrdering projects do yield! fmtProject proj
+    for folder in folders do yield! fmtFolder folder
 
     // Global Section
     yield "Global"
@@ -80,7 +92,7 @@ let private formatSolutionFileLines (solution : Solution) = seq {
     for proj in projects do 
         let fmt config platform cfg = 
             sprintf "\t\t{%s}.%s|%s.%s = %s|%s"
-                (fmtGuid proj) config platform cfg config platform
+                (fmtGuid proj.id) config platform cfg config platform
 
         // TODO: detect nonstandard project configurations
         yield fmt "Debug" "Any CPU" "ActiveCfg"

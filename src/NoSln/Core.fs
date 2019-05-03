@@ -106,6 +106,20 @@ let getTransitiveClosure (config : Configuration) (projects : seq<Project>) =
         
     Seq.toList projects.Values
 
+/// calculates topological ordering of supplied project files
+let getTopologicalOrdering (projects : seq<Project>) =
+    let index = projects |> Seq.map (fun p -> p.fullPath, p) |> dict
+
+    let graph =
+        index.Values
+        // prune p2p references not part of dependency graph
+        |> Seq.map (fun p -> p.fullPath, p.p2pReferences |> List.filter index.ContainsKey)
+        |> Seq.toList
+
+    match Graph.tryGetTopologicalOrdering graph with
+    | Ok sorted -> sorted |> List.map (fun k -> index.[k])
+    | Error _ -> Seq.toList projects // silently ignore depedencies that are not DAGs. Return original ordering.
+
 let mkProjects (config : Configuration) (projects : string list) =
     let parsedProjects = projects |> List.map (mkProject config)
     if config.noTransitiveProjects then parsedProjects
