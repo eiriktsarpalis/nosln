@@ -1,156 +1,92 @@
 ﻿[<AutoOpen>]
-module NoSln.Utils
+module internal NoSln.Utils
 
 open System
-open System.Diagnostics
+open System.Collections.Generic
 open System.IO
-open System.Reflection
-open System.Runtime.InteropServices
-open Argu
 
-module Assembly =
-    let currentAssembly = Assembly.GetExecutingAssembly()
-
-    let packageVersion =
-        let attribute = currentAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-        attribute.InformationalVersion
+let throw ctor fmt = Printf.ksprintf (raise << ctor) fmt
 
 module Environment =
 
-    type Os = Windows | OSX | Linux | Unknown
-
-    let osPlatform =
-        if RuntimeInformation.IsOSPlatform OSPlatform.Windows then Windows
-        elif RuntimeInformation.IsOSPlatform OSPlatform.Linux then Linux
-        elif RuntimeInformation.IsOSPlatform OSPlatform.OSX then OSX
-        else Unknown
-
-module Console =
-
-    let log (msg : string) = Console.WriteLine msg
-    let logf fmt = Printf.ksprintf log fmt
-
-    let logColor color (msg : string) =
-        let currColor = Console.ForegroundColor
-        Console.ForegroundColor <- color
-        try Console.WriteLine msg
-        finally Console.ForegroundColor <- currColor
-
-    let logfColor color fmt = Printf.ksprintf (logColor color) fmt
-
-type ColoredProcessExiter() =
-    interface IExiter with
-        member __.Name = "exiter"
-        member __.Exit(message, code) =
-            if code = ErrorCode.HelpText then
-                Console.WriteLine(message)
-            else
-                Console.logColor ConsoleColor.Red message
-
-            exit(int code)
+    let isCaseSensitiveFileSystem =
+        // this is merely a heuristic, but should always work in practice
+        let tmp = Path.GetTempPath()
+        not(Directory.Exists(tmp.ToUpper()) && Directory.Exists(tmp.ToLower()))
 
 module Path =
-    let toBackSlashSeparators (path : string) = path.Replace('/', '\\')
-    let toForwardSlashSeparators (path : string) = path.Replace('\\', '/')
-    
-    let trimTrailingSlashes (path : string) = path.TrimEnd('/', '\\')
 
     /// works around Path.GetFullPath issues running on unix
     let getFullPathXPlat (path : string) =
-        match Environment.osPlatform with
-        | Environment.Windows 
-        | Environment.Unknown -> Path.GetFullPath path
-        | Environment.Linux
-        | Environment.OSX -> 
-            // not working properly on unices with backslash paths
-            Path.GetFullPath(toForwardSlashSeparators path) 
-        |> trimTrailingSlashes
+        let normalizedPath =
+            match System.IO.Path.DirectorySeparatorChar with
+            | '/' -> path.Replace('\\', '/') // Path.GetFullPath not handling backslashes properly on unices
+            | _   -> path
 
-module File =
+        Path.GetFullPath(normalizedPath).TrimEnd('\\','/') // Trim trailing slashes
 
-    let createOrReplace (path : string) (content : string) =
-        Fake.IO.Directory.ensure (Path.GetDirectoryName path)
-        let exists = File.Exists path
-        File.WriteAllText(path, content)
-        exists
+    /// Given two absolute paths, calculates a target path relative to the source path
+    let getRelativePath (basePath : string) (targetPath : string) =
+        // adapted from https://stackoverflow.com/a/22055937/1670977
+        // TODO replace with implementation available in netstandard2.1
+        let sep = Path.DirectorySeparatorChar
+        let pathComparer = if Environment.isCaseSensitiveFileSystem then StringComparison.InvariantCulture else StringComparison.InvariantCultureIgnoreCase
+        let (==) x y = String.Equals(x, y, pathComparer)
 
+        if not(Path.IsPathRooted basePath) then invalidArg "sourcePath" "path must be absolute"
+        if not(Path.IsPathRooted targetPath) then invalidArg "targetPath" "path must be absolute"
 
-module Process =
-    
-    let executeFile (path : string) =
-        match Environment.osPlatform with
-        | Environment.Windows -> 
-            let psi = new ProcessStartInfo(path, UseShellExecute = true)
-            let _ = Process.Start psi
-            ()
+        let tokenize p = Path.GetFullPath(p).TrimEnd(sep).Split(sep)
+        let baseTokens = tokenize basePath
+        let targetTokens = tokenize targetPath
 
-        | Environment.OSX ->
-            let psi = new ProcessStartInfo("open", path)
-            let _ = Process.Start psi
-            ()
-            
-        | Environment.Linux ->
-            let psi = new ProcessStartInfo("xdg-open", path)
-            let _ = Process.Start psi
-            ()
+        let overlap =
+            Seq.zip baseTokens targetTokens
+            |> Seq.takeWhile (fun (l,r) -> l == r)
+            |> Seq.length
 
-        | env -> raise <| NotImplementedException(sprintf "execution of sln files not yet implemented in %O environments" env)
+        if overlap = 0 then targetPath else
 
+        let relativeTokens = seq {
+            for _ in 1 .. baseTokens.Length - overlap do yield ".."
+            for i in overlap .. targetTokens.Length - 1 do yield targetTokens.[i]
+        }
 
-/// Directed graph representation
-type Graph<'T> = ('T * 'T list) list
+        String.concat (string sep) relativeTokens
+
+module Dictionary =
+    let create keyValuePairs =
+        let dict = new Dictionary<_,_>()
+        for k,v in keyValuePairs do dict.Add(k,v)
+        dict
+
+type Map<'k,'v when 'k : comparison> with
+    member m.Keys   = (m :> IDictionary<'k,'v>).Keys
+    member m.Values = (m :> IDictionary<'k,'v>).Values
+
 
 module Graph =
 
-    /// <summary>
-    ///     Maps directed graph to isomorphic instance of relabeled nodes.
-    /// </summary>
-    /// <param name="f">Mapper function.</param>
-    /// <param name="graph">Input graph.</param>
-    let map (f : 'T -> 'S) (graph : Graph<'T>) : Graph<'S> =
-        graph |> List.map (fun (n, edges) -> f n, List.map f edges)
+    let tryGetTopologicalSorting (graph : seq<'T * #seq<'T>>) =
+        // straightforward implementation of Kahn's algorithm
+        let state = 
+            graph 
+            |> Seq.map (fun (v,es) -> v, HashSet(es :> seq<_>))
+            |> Dictionary.create
 
-    /// <summary>
-    ///     Filters nodes (and adjacent edges) that satisfy the provided predicate.
-    /// </summary>
-    /// <param name="f">Node filter function.</param>
-    /// <param name="graph">Input directed graph.</param>
-    let filterNode (f : 'T -> bool) (graph : Graph<'T>) : Graph<'T> =
-        graph |> List.choose(fun (n, edges) -> if f n then Some(n, List.filter f edges) else None)
+        let sorted = ResizeArray()
 
-    /// <summary>
-    ///     Filters directed edges from graph that satisfy provided predicate.
-    /// </summary>
-    /// <param name="f">Directed edge filter predicate.</param>
-    /// <param name="graph">Input directed graph.</param>
-    let filterEdge (f : 'T -> 'T -> bool) (graph : Graph<'T>) : Graph<'T> =
-        graph |> List.map (fun (n, edges) -> (n, List.filter (fun e -> f n e) edges))
+        let stripVertex v =
+            state.Remove v |> ignore
+            for es in state.Values do es.Remove v |> ignore
 
-    /// Attempt to compute a topological sorting for graph if DAG,
-    /// If not DAG returns a cycle within the graph for further debugging.
-    let tryGetTopologicalOrdering<'T when 'T : equality> (g : Graph<'T>) : Result<'T list, 'T list> =
-        let locateCycle (g : Graph<'T>) =
-            let d = dict g
-            let rec tryFindCycleInPath (path : 'T list) (acc : 'T list) (t : 'T) =
-                match path with
-                | [] -> None
-                | h :: _ when h = t -> Some (h :: acc)
-                | h :: tl -> tryFindCycleInPath tl (h :: acc) t
-
-            let rec walk (path : 'T list) (t : 'T) =
-                match tryFindCycleInPath path [] t with
-                | Some _ as cycle -> cycle
-                | None -> d.[t] |> List.tryPick (walk (t :: path))
-
-            g |> List.head |> fst |> walk [] |> Option.get
-
-        let rec aux sorted (g : Graph<'T>) =
-            if List.isEmpty g then Ok (List.rev sorted) else
-
-            match g |> List.tryFind (function (_,[]) -> true | _ -> false) with
-            | None -> Error (locateCycle g) // not a DAG, detect and report a cycle in graph
-            | Some (t,_) ->
-                let g0 = g |> filterNode ((<>) t)
-                aux (t :: sorted) g0
-
-        aux [] g
+        let rec aux () =
+            if state.Count = 0 then Seq.toList sorted |> Some
+            else
+                match state |> Seq.tryFind (fun kv -> kv.Value.Count = 0) with
+                | None -> None // graph contains cycles, cannot find topological sort
+                | Some (KeyValue(v,_)) ->
+                    stripVertex v
+                    sorted.Add v
+                    aux()
+        aux()

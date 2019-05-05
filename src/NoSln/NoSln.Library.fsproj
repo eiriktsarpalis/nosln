@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>nosln</AssemblyName>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>52,1178,3186</NoWarn>
+    <OtherFlags>--warnon:1182</OtherFlags>
+    <WarningLevel>5</WarningLevel>
+    <WarningsAsErrors />
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Utils.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Builder.fs" />
+    <Compile Include="Formatter.fs" />
+    <Compile Include="NoSln.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+</Project>

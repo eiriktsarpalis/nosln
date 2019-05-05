@@ -1,76 +1,70 @@
 ﻿namespace rec NoSln
 
 open System
-open System.Xml.Linq
 
-type Map<'K,'V> = System.Collections.Immutable.ImmutableDictionary<'K,'V>
-
-// Simplistic tree structure representing a solution file
-
+/// Solution tree representation
 type Solution =
     {
+        /// Solution UUID
         id : Guid
-        folders : Map<string, Folder>
-        projects : Project list
-    }
-
-type Folder =
-    {
-        id : Guid
-        name  : string
-        folders : Map<string, Folder>
-        projects : Project list
-        files : File list
-    }
-
-type ProjectType =
-    | CsProj
-    | VbProj
-    | FsProj
-    | CsProjLegacy
-    | VbProjLegacy
-    | FsProjLegacy
-    | Unrecognized
-
-type Project =
-    {
-        id : Guid
-        name : string
-        content : XDocument
-        projectType : ProjectType
-        p2pReferences : string list
-        path : string // sln relative path
-        fullPath : string // fully qualified filesystem path
-        logicalPath : string list // logical solution path
-    }
-
-type File =
-    {
-        id : string
-        path : string // sln relative path
-        fullPath : string // fully qualified filesystem path
-        logicalPath : string list // logical solution path
-    }
-
-/// NoSln configuration type
-
-type Configuration =
-    {
-        baseDirectory : string
+        /// Root folders in solution
+        folders : SolutionFolder list
+        /// Root projects in solution
+        projects : SolutionProject list
+        /// Filesystem path to solution file
+        /// All solution projects/files referenced relative to this
         targetSolutionFile : string
-        targetSolutionDir : string
-
-        projectIncludes : string list
-        projectExcludes : string list
-        gitIgnoreFile : string option
-        fileIncludes : string list
-        fileExcludes : string list        
-
-        noFiles : bool
-        noTransitiveProjects : bool
-        useAbsolutePaths : bool
-        flattenProjects : bool
-        start : bool
-        quiet : bool
-        debug : bool
     }
+
+/// Solution folder representation
+type SolutionFolder =
+    {
+        /// Folder UUID
+        id : Guid
+        /// Project type UUID
+        projectTypeGuid : Guid
+        /// Folder name
+        name  : string
+        /// Folders contained within folder
+        folders : SolutionFolder list
+        /// Projects contained within folder
+        projects : SolutionProject list
+        /// Files contained within folder
+        files : SolutionFile list
+    }
+
+/// Solution project representation
+type SolutionProject =
+    {
+        /// Project UUID
+        id : Guid
+        /// Project name
+        name : string
+        /// Project type UUID
+        projectTypeGuid : Guid
+        /// P2P references of project
+        p2pReferences : string list
+        /// Fully qualified filesystem path
+        fullPath : string
+        /// Filesystem path relative to solution file
+        relativePath : string
+        /// Logical path of solution item
+        logicalPath : string list
+    }
+
+/// Solution file representation
+type SolutionFile =
+    {
+        /// File identifier
+        id : string
+        /// Fully qualified filesystem path
+        fullPath : string
+        /// Filesystem path relative to solution file
+        relativePath : string
+        /// Logical path of solution item
+        logicalPath : string list
+    }
+
+
+exception NoSlnException of message:string
+  with override e.Message = e.message

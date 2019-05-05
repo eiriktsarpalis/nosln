@@ -4,6 +4,7 @@ open System
 open System.IO
 open Fake.IO.Globbing
 
+/// locate gitignore file by looking in all parent directories
 let rec tryFindGitIgnoreFile (path : string) =
     let candidate = Path.Combine(path, ".gitignore")
     if File.Exists candidate then Some candidate
@@ -12,9 +13,9 @@ let rec tryFindGitIgnoreFile (path : string) =
         | null -> None
         | parent -> tryFindGitIgnoreFile parent
 
-// converts a .gitignore file to a globbing representation
 // poor man's .gitignore parser, improvements welcome
 // https://git-scm.com/docs/gitignore
+/// converts a .gitignore file to a globbing representation
 let parse (gitIgnoreFile : string) =
     let baseDir = Path.GetDirectoryName gitIgnoreFile
 
@@ -49,7 +50,7 @@ let parse (gitIgnoreFile : string) =
             else
                 entry
             
-        isNegation, Path.toForwardSlashSeparators entry
+        isNegation, entry.Replace('\\', '/')
 
     let ignorePatterns = 
         File.ReadLines(gitIgnoreFile)

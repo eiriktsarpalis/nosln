@@ -1,39 +1,49 @@
 ﻿module NoSln.Tests.Tests
 
 open System
+open System.IO
 open Xunit
 open TypeShape.Empty
 open Swensen.Unquote.Assertions
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+
 open NoSln
+open NoSln.Tests
 
-TypeShape.Empty.register (fun () -> Unchecked.defaultof<System.Xml.Linq.XDocument>)
+let repoDirectory = __SOURCE_DIRECTORY__ @@ ".." @@ ".." |> Path.GetFullPath
 
-let mkProj name logicalPath = { empty<Project> with name = name ; logicalPath = logicalPath }
-let mkFile name logicalPath = { empty<File> with id = name ; logicalPath = logicalPath }
-
-[<Fact>]
-let ``Inserting a project should place it in the right path`` () =
-    let project = mkProj "foo" ["src" ; "myproj"]
-
-    let sln = Core.mkSln()
-    let sln0 = Core.insertProject empty sln project
-
-    tryFindPath sln0 ["src" ; "myproj" ; "foo"] =! Some (Project project)
+let allProjects = lazy(!! (repoDirectory @@ "**" @@ "*.??proj") |> Seq.toList)
+let allFiles = lazy(!! (repoDirectory @@ "**" @@ "*") |> Seq.toList)
 
 [<Fact>]
-let ``Inserting a file should place it in the right path`` () =
-    let file = mkFile "sln.txt" ["items" ]
+let ``Generated solution should place test project in right folder`` () =
+    let sln = NoSln.CreateSolution(baseDirectory = repoDirectory, projects = allProjects.Value)
 
-    let sln = Core.mkSln()
-    let sln0 = Core.insertFile empty sln file
-
-    tryFindPath sln0 ["items" ; "sln.txt"] =! Some (File file)
+    sln |> tryFindPath ["tests"; "NoSln.Tests"] =! Some Project
 
 [<Fact>]
-let ``Inserting an item should create a corresponding solution folder`` () =
-    let project = mkProj "foo" ["src" ; "myproj"]
+let ``Generated solution should place solution items in right folder`` () =
+    let sln = NoSln.CreateSolution(baseDirectory = repoDirectory, files = allFiles.Value)
 
-    let sln = Core.mkSln()
-    let sln0 = Core.insertProject empty sln project
+    sln |> tryFindPath ["Solution Items"; ".gitignore"] =! Some File
 
-    test <@ match tryFindPath sln0 ["src" ; "myproj"] with Some (Folder _) -> true | _ -> false @>
+[<Fact>]
+let ``Generated solution with flattened structure place test project in right folder`` () =
+    let sln = NoSln.CreateSolution(baseDirectory = repoDirectory, projects = allProjects.Value, flattenSolutionFolders = true)
+
+    sln |> tryFindPath ["NoSln.Tests"] =! Some Project
+
+[<Fact>]
+let ``Referencing test projects should include transitive dependencies by default`` () =
+    let project = __SOURCE_DIRECTORY__ @@ "NoSln.Tests.fsproj"
+    let sln = NoSln.CreateSolution(baseDirectory = repoDirectory, projects = [project])
+
+    sln |> tryFindPath ["src" ; "NoSln.Library"] =! Some Project
+
+[<Fact>]
+let ``Referencing test projects should not include transitive dependencies if disabled`` () =
+    let project = __SOURCE_DIRECTORY__ @@ "NoSln.Tests.fsproj"
+    let sln = NoSln.CreateSolution(baseDirectory = repoDirectory, projects = [project], includeTransitiveP2pReferences = false)
+
+    sln |> tryFindPath ["src" ; "NoSln.Library"] =! None

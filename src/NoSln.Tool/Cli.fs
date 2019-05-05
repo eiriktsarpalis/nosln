@@ -147,8 +147,13 @@ let handleCliAction (action : CliAction) =
         if not config.quiet then
             Console.logf "dotnet-nosln version %s" Assembly.packageVersion
 
-        let sln = Core.createSolution config
-        let slnContents = Formatter.formatSolution sln
+        let sln = Globbing.mkSolution config
+
+        if config.debug then
+            Console.logf "Config: %A" config
+            Console.logf "Solution: %A" sln
+
+        let slnContents = sln.Format()
         let isReplaced = File.createOrReplace config.targetSolutionFile slnContents
 
         if config.quiet then Console.log config.targetSolutionFile
