@@ -38,7 +38,7 @@ uninstall:
 
 push: test
 	for nupkg in `ls $(ARTIFACT_PATH)/*.nupkg`; do \
-		dotnet nuget push $$nupkg -s $(NUGET_SOURCE) -k $(NUGET_API_KEY) \
+		dotnet nuget push $$nupkg -s $(NUGET_SOURCE) -k $(NUGET_API_KEY); \
 	done
 
 all: test

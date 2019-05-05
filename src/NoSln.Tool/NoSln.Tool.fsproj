@@ -9,7 +9,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>52,1178,3186</NoWarn>
+    <NoWarn>$(NoWarn);52;1178;3186</NoWarn>
     <OtherFlags>--warnon:1182</OtherFlags>
     <WarningLevel>5</WarningLevel>
     <WarningsAsErrors />
