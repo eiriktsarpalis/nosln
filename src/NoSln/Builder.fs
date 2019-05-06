@@ -41,10 +41,10 @@ type SolutionConfiguration =
 let validateConfiguration(config : SolutionConfiguration) =
     let checkRooted id (path : string) =
         if not <| Path.IsPathRooted path then
-            throw NoSlnException "%s %A is not an absolute path" id config.baseDirectory
+            throw NoSlnException "%s %A is not an absolute path" id path
 
     checkRooted "base directory" config.baseDirectory
-    checkRooted "solution file" config.targetSolutionFile
+    checkRooted "target solution directory" config.targetSolutionFile
     for f in config.files do checkRooted "file" f
     for p in config.projects do checkRooted "project" p
 
@@ -55,9 +55,11 @@ let mkSolutionFileForDirectory (baseDirectory : string) =
 
 /// Generates a random solution file in the system temp directory
 let mkTempSolutionfile (baseDirectory : string) =
+    let tempPath = Path.GetTempPath()
     let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
     let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
-    sprintf "%s-%s.sln" slnIdentifier randomSuffix
+    let filename = sprintf "%s-%s.sln" slnIdentifier randomSuffix
+    Path.Combine(tempPath, filename)
 
 /// gets the file path to be used within the solution file
 let getPathRelativeToSolutionFile (config : SolutionConfiguration) (fullPath : string) =

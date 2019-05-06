@@ -13,7 +13,8 @@ let main (argv:string[]) =
         | NoSlnException message ->
             results.Raise(message, showUsage = showUsage)
         | e ->
-            results.Raise(string e, showUsage = showUsage)
+            // possibly due to internal error, render with stacktrace
+            results.Raise(string e, showUsage = false)
 
     let action = handler true (fun () -> Cli.processArguments results)
     handler false (fun () -> Cli.handleCliAction action)

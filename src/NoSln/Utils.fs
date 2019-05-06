@@ -5,7 +5,7 @@ open System
 open System.Collections.Generic
 open System.IO
 
-let throw ctor fmt = Printf.ksprintf (raise << ctor) fmt
+let inline throw ctor fmt = Printf.ksprintf (raise << ctor) fmt
 
 module Environment =
 

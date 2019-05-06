@@ -43,7 +43,7 @@ type NoSln =
                     match targetSolutionFile with
                     | None when defaultArg useTempSolutionFile false -> Builder.mkTempSolutionfile baseDirectory
                     | None -> Builder.mkSolutionFileForDirectory baseDirectory
-                    | Some f -> f
+                    | Some f -> Path.getFullPathXPlat f
 
                 {
                     baseDirectory = baseDirectory
