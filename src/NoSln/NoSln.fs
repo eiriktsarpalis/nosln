@@ -77,7 +77,7 @@ type NoSln =
         ?includeTransitiveP2pReferences : bool,
         ?flattenSolutionFolders : bool,
         ?useTempSolutionFile : bool,
-        ?useAbsolutePaths : bool) : unit =
+        ?useAbsolutePaths : bool) : string =
 
         let solution = 
             NoSln.CreateSolution
@@ -90,4 +90,6 @@ type NoSln =
                 ?useTempSolutionFile = useTempSolutionFile,
                 ?useAbsolutePaths = useAbsolutePaths)
 
-        solution.Write()
+        do solution.Write()
+
+        solution.targetSolutionFile
