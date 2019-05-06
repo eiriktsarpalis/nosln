@@ -38,16 +38,6 @@ type SolutionConfiguration =
         useAbsolutePaths : bool
     }
 
-let validateConfiguration(config : SolutionConfiguration) =
-    let checkRooted id (path : string) =
-        if not <| Path.IsPathRooted path then
-            throw NoSlnException "%s %A is not an absolute path" id path
-
-    checkRooted "base directory" config.baseDirectory
-    checkRooted "target solution directory" config.targetSolutionFile
-    for f in config.files do checkRooted "file" f
-    for p in config.projects do checkRooted "project" p
-
 /// creates a solution file contained in supplied directory
 let mkSolutionFileForDirectory (baseDirectory : string) =
     let fileName = Path.GetFileName baseDirectory + ".sln"

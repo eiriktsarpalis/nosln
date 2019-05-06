@@ -55,7 +55,6 @@ type NoSln =
                     useAbsolutePaths = defaultArg useAbsolutePaths false
                 }
 
-            Builder.validateConfiguration configuration
             Builder.mkSolution configuration
 
     /// <summary>
