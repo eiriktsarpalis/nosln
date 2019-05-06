@@ -5,6 +5,9 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <PropertyGroup>
+    <Description>A library used for generating solution files.</Description>
+  </PropertyGroup>
+  <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);52;1178;3186</NoWarn>
     <OtherFlags>--warnon:1182</OtherFlags>

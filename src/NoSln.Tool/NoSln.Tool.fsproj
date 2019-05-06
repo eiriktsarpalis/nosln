@@ -8,6 +8,9 @@
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
   <PropertyGroup>
+    <Description>A CLI tool used for generating solution files.</Description>
+  </PropertyGroup>
+  <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>$(NoWarn);52;1178;3186</NoWarn>
     <OtherFlags>--warnon:1182</OtherFlags>

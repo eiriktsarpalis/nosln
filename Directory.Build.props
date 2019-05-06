@@ -2,7 +2,6 @@
   <!-- Global properties for all projects -->
   <PropertyGroup>
     <!-- NuGet metadata -->
-    <Description>A CLI tool used for generating solution files.</Description>
     <Authors>Eirik Tsarpalis</Authors>
     <Copyright>2019</Copyright>
     <PackageTags>dotnet, cli, solutions, sln</PackageTags>
