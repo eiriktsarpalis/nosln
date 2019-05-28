@@ -1,7 +1,6 @@
 ﻿namespace NoSln
 
 open System
-open System.Runtime.CompilerServices
 open NoSln.Builder
 
 [<AutoOpen>]
@@ -12,6 +11,13 @@ module Extensions =
         member sln.Format() = Formatter.formatSolution sln
         /// Writes solution contents to specified target solution file
         member sln.Write() = Formatter.writeSolutionFile sln
+
+    [<RequireQualifiedAccess>]
+    module Path =
+        /// Implementation of Path.GetRelativePath for net4x/netstandard2.0 targets
+        let getRelativePath (basePath : string) (targetPath : string) = Path.getRelativePath basePath targetPath
+        /// Implementation of Path.GetFullPath that correctly handles '\' separators on linux
+        let getFullPath (path : string) = Path.getFullPathXPlat path
 
 type NoSln =
 
