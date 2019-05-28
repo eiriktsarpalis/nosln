@@ -1,11 +1,8 @@
-FROM andrewlock/dotnet-mono:2.1.504-sdk
+FROM eiriktsarpalis/dotnet-sdk-mono:2.2.204-stretch
 
 RUN apt-get update && \
     apt-get install -y make && \
     rm -rf /var/lib/apt/lists/*
-
-# Enables building and testing of net4x projects using mono sdk
-ENV FrameworkPathOverride=/usr/lib/mono/4.7.1-api/
 
 # Build bits
 WORKDIR /app
