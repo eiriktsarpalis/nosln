@@ -106,8 +106,8 @@ let mkProject (config : SolutionConfiguration) (fullPath : string) : SolutionPro
         |> Seq.map (fun n -> n.Attribute(XName.op_Implicit "Include").Value)
         |> Seq.map (fun r ->
             let combined = Path.Combine(projectDir, r)
-            let fullPath = Path.getFullPathXPlat combined
-            if File.Exists fullPath then fullPath
+            let p2pFullPath = Path.getFullPathXPlat combined
+            if File.Exists p2pFullPath then p2pFullPath
             else throw NoSlnException "project %A contains p2p reference %A which was not found" fullPath r)
         |> Seq.toList
 
