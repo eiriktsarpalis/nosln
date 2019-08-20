@@ -24,7 +24,9 @@
     <Compile Include="Globbing.fs" />
     <Compile Include="Cli.fs" />
     <Compile Include="Main.fs" />
+    <Content Include="packages.lock.json" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.5.0" />
     <PackageReference Include="Fake.IO.FileSystem" Version="5.13.5" />

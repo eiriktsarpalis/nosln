@@ -20,7 +20,9 @@
     <Compile Include="Builder.fs" />
     <Compile Include="Formatter.fs" />
     <Compile Include="NoSln.fs" />
+    <Content Include="packages.lock.json" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
   </ItemGroup>

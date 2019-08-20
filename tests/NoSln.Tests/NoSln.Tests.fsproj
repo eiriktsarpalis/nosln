@@ -7,7 +7,10 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Tests.fs" />
+    <Content Include="packages.lock.json" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.5.0" />

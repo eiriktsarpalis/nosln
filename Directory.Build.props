@@ -1,6 +1,10 @@
 <Project ToolsVersion="15.0">
   <!-- Global properties for all projects -->
   <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode>true</RestoreLockedMode>
+  </PropertyGroup>
+  <PropertyGroup>
     <!-- NuGet metadata -->
     <Authors>Eirik Tsarpalis</Authors>
     <Copyright>2019</Copyright>
