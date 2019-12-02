@@ -59,12 +59,12 @@
       "Microsoft.NETCore.Targets": {
         "type": "Transitive",
         "resolved": "2.0.0",
-        "contentHash": "Y2bOmvbdcHRwad85wyAxXTs1GTGklao4SSwndRzgOpK03BaB3Z3KQs9/mm6ptOvJy1KCdgbtnnfsTpYSOcs7nA=="
+        "contentHash": "odP/tJj1z6GylFpNo7pMtbd/xQgTC3Ex2If63dRTL38bBNMwsBnJ+RceUIyHdRBC0oik/3NehYT+oECwBhIM3Q=="
       },
       "NETStandard.Library": {
         "type": "Transitive",
         "resolved": "2.0.3",
-        "contentHash": "rqHiKERWbeQr1jhK1Nn4jOxDLrMP5lBRbOuntG+n40c4IDXRs79jxci/L2aLru7NpRpE9sL+T0amBm3C1v1L7w==",
+        "contentHash": "st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
