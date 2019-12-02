@@ -7,7 +7,7 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Tests.fs" />
-    <Content Include="packages.lock.json" />
+    <None Include="packages.lock.json" />
   </ItemGroup>
 
   <ItemGroup />

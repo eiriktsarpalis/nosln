@@ -20,7 +20,7 @@
     <Compile Include="Builder.fs" />
     <Compile Include="Formatter.fs" />
     <Compile Include="NoSln.fs" />
-    <Content Include="packages.lock.json" />
+    <None Include="packages.lock.json" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
