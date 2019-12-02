@@ -94,7 +94,7 @@
       "NETStandard.Library": {
         "type": "Transitive",
         "resolved": "2.0.3",
-        "contentHash": "HnAVBEXBSVbk9bFQCN3VRNklpprXdDbET21PEpcVdpEHx0rLO5lOua/y0rwhRNXC5QG74Ro0+BtWwjDvwHiWaQ==",
+        "contentHash": "st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
@@ -175,7 +175,7 @@
       "System.Diagnostics.FileVersionInfo": {
         "type": "Transitive",
         "resolved": "4.3.0",
-        "contentHash": "Ik57r9IG9FEaZGYwyCkVwdNy1oFe0ojurCkaXM0tu+GxDse/IOzrHevycZ7k2EF2LeAoF6Ay3yzOhdLE1lxeRw==",
+        "contentHash": "omCF64wzQ3Q2CeIqkD6lmmxeMZtGHUmzgFMPjfVaOsyqpR66p/JaZzManMw1s33osoAb5gqpncsjie67+yUPHQ==",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
           "System.Globalization": "4.3.0",
@@ -469,7 +469,7 @@
       "System.Threading.Thread": {
         "type": "Transitive",
         "resolved": "4.3.0",
-        "contentHash": "02A+iYXNn22CzCjDb4hVUYwivhy6QeYhTVvH5k4TPLA3UwPbKaJ/BrUr5UylH1lizZIo/vpxgCLHpzTQQ4guzA==",
+        "contentHash": "OHmbT+Zz065NKII/ZHcH9XO1dEuLGI1L2k7uYss+9C1jLxTC9kTZZuzUOyXHayRk+dft9CiDf3I/QZ0t8JKyBQ==",
         "dependencies": {
           "System.Runtime": "4.3.0"
         }

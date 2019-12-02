@@ -24,7 +24,7 @@
     <Compile Include="Globbing.fs" />
     <Compile Include="Cli.fs" />
     <Compile Include="Main.fs" />
-    <Content Include="packages.lock.json" />
+    <None Include="packages.lock.json" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
