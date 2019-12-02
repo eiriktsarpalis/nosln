@@ -6,7 +6,6 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
-    <RollForward>Major</RollForward>
   </PropertyGroup>
   <PropertyGroup>
     <Description>A CLI tool used for generating solution files.</Description>
