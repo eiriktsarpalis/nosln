@@ -19,13 +19,15 @@ minver: clean
 	dotnet minver > $(VERSION_FILE)
 
 build: minver
-	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` $(LIBRARY_PROJECT)
-	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` $(NETTOOL_PROJECT)
+	dotnet restore --locked-mode $(LIBRARY_PROJECT)
+	dotnet restore --locked-mode $(NETTOOL_PROJECT)
+	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` --no-restore $(LIBRARY_PROJECT)
+	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` --no-restore $(NETTOOL_PROJECT)
 	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) dotnet-nosln --version `cat $(VERSION_FILE)`
 
 test: build
 	dotnet nosln -D -o nosln.sln
-	dotnet test -c $(CONFIGURATION)
+	dotnet test -c $(CONFIGURATION) --no-restore
 	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
 	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
