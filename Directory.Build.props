@@ -8,7 +8,7 @@
     <!-- NuGet metadata -->
     <Authors>Eirik Tsarpalis</Authors>
     <Copyright>2019</Copyright>
-    <PackageTags>dotnet, cli, solutions, sln</PackageTags>
+    <PackageTags>dotnet;cli;solutions;sln</PackageTags>
     <PackageProjectUrl>https://github.com/eiriktsarpalis/nosln</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eiriktsarpalis/nosln</RepositoryUrl>
     <PackageLicense>https://github.com/eiriktsarpalis/nosln/blob/master/License.md</PackageLicense>
