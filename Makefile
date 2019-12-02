@@ -4,7 +4,6 @@ ARTIFACT_PATH := $(SOURCE_DIRECTORY)artifacts
 LIBRARY_PROJECT := src/NoSln
 NETTOOL_PROJECT := src/NoSln.Tool
 TOOL_PATH := $(SOURCE_DIRECTORY)tools
-MINVER_VERSION := 1.0.0
 VERSION_FILE := $(TOOL_PATH)/version
 PATH := $(PATH):$(TOOL_PATH)
 CONFIGURATION ?= Release
@@ -15,8 +14,9 @@ clean:
 	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.sln
 
 minver: clean
-	dotnet tool install --tool-path $(TOOL_PATH) minver-cli --version $(MINVER_VERSION)
-	$(TOOL_PATH)/minver > $(VERSION_FILE)
+	dotnet tool restore
+	mkdir -p $(TOOL_PATH)
+	dotnet minver > $(VERSION_FILE)
 
 build: minver
 	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` $(LIBRARY_PROJECT)
