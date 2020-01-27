@@ -31,6 +31,7 @@
     <PackageReference Update="FSharp.Core" Version="4.5.0" />
     <PackageReference Include="Fake.IO.FileSystem" Version="5.13.5" />
     <PackageReference Include="Argu" Version="5.3.0" />
+    <PackageReference Include="MinVer" Version="2.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoSln\NoSln.Library.fsproj" />

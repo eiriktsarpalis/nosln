@@ -4,30 +4,28 @@ ARTIFACT_PATH := $(SOURCE_DIRECTORY)artifacts
 LIBRARY_PROJECT := src/NoSln
 NETTOOL_PROJECT := src/NoSln.Tool
 TOOL_PATH := $(SOURCE_DIRECTORY)tools
-VERSION_FILE := $(TOOL_PATH)/version
 PATH := $(PATH):$(TOOL_PATH)
 CONFIGURATION ?= Release
 NUGET_SOURCE ?= "https://api.nuget.org/v3/index.json"
 NUGET_API_KEY ?= ""
 
-DOCKER_MAKE_TARGETS := test
-DOCKER_IMAGE_LABEL := docker-nosln-build
-DOCKER_CONTAINER_NAME := docker-nosln-build-container
+DOCKER_MAKE_TARGETS ?= test
+DOCKER_IMAGE_LABEL ?= docker-nosln-build
+DOCKER_CONTAINER_NAME ?= docker-nosln-build-container
 
 clean:
 	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.sln
 
 minver: clean
 	dotnet tool restore
-	mkdir -p $(TOOL_PATH)
-	dotnet minver > $(VERSION_FILE)
+	dotnet minver
 
 build: minver
 	dotnet restore --locked-mode $(LIBRARY_PROJECT)
 	dotnet restore --locked-mode $(NETTOOL_PROJECT)
-	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` --no-restore $(LIBRARY_PROJECT)
-	dotnet pack -c $(CONFIGURATION) -o $(ARTIFACT_PATH) -p:Version=`cat $(VERSION_FILE)` --no-restore $(NETTOOL_PROJECT)
-	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) dotnet-nosln --version `cat $(VERSION_FILE)`
+	dotnet pack --no-restore -c $(CONFIGURATION) -o $(ARTIFACT_PATH) $(LIBRARY_PROJECT)
+	dotnet pack --no-restore -c $(CONFIGURATION) -o $(ARTIFACT_PATH) $(NETTOOL_PROJECT)
+	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) --version `dotnet minver -v e` dotnet-nosln
 
 test: build
 	dotnet nosln -D -o nosln.sln
@@ -37,7 +35,7 @@ test: build
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
 
 install: build
-	dotnet tool install --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `cat $(VERSION_FILE)`
+	dotnet tool install --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`
 
 uninstall:
 	dotnet tool uninstall -g dotnet-nosln
@@ -47,7 +45,7 @@ push: test
 		dotnet nuget push $$nupkg -s $(NUGET_SOURCE) -k $(NUGET_API_KEY); \
 	done
 
-docker-build: clean
+docker-build:
 	docker build -t $(DOCKER_IMAGE_LABEL) .
 	docker run --rm --name $(DOCKER_CONTAINER_NAME) \
 		   $(DOCKER_IMAGE_LABEL) \

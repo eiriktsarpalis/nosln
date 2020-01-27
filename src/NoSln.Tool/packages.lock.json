@@ -42,6 +42,12 @@
           "NETStandard.Library": "2.0.3"
         }
       },
+      "MinVer": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "1U1JIwD47a/m9S1LXdDm+fByP3LYR9hTeFfi1MlizScXF4e4yUpZvunEyQAovVfi4qYaUlVzIbk08OXFfz3FfQ=="
+      },
       "Fake.Core.String": {
         "type": "Transitive",
         "resolved": "5.13.5",

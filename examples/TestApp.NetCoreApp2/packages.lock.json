@@ -20,41 +20,41 @@
       },
       "Microsoft.NETCore.App": {
         "type": "Direct",
-        "requested": "[2.1.13, )",
-        "resolved": "2.1.13",
-        "contentHash": "oB/yobEiuhNDI5M6Lr52vlyWFbwIumLK6sqaOZ4pLe7jR1w5nBjoFXhrBJOr/EWqu8DNraaquTkhN/EaOib62g==",
+        "requested": "[2.1.15, )",
+        "resolved": "2.1.15",
+        "contentHash": "PX20natRCCWDkfmVdzMg+/DXlisl8nnxPnjn9mCU7hs120whAJNg2+0SNtT/PFWHXuEtnmS4Zb0dDQiFsIV9ew==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostPolicy": "2.1.13",
-          "Microsoft.NETCore.Platforms": "2.1.6",
+          "Microsoft.NETCore.DotNetHostPolicy": "2.1.15",
+          "Microsoft.NETCore.Platforms": "2.1.7",
           "Microsoft.NETCore.Targets": "2.0.0",
           "NETStandard.Library": "2.0.3"
         }
       },
       "Microsoft.NETCore.DotNetAppHost": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "V2S2OlQnSh5/aWhfVip9UuIBCaz45AeOpmeiqO9Kf+9mtWhcCSRX3WbqQ9529IIbOsUFhLPqRnDE+mfWO9chWw=="
+        "resolved": "2.1.15",
+        "contentHash": "m51LfM5baQl4twjEzezwTXNyDaOdu3my09ywAVfxJMTNB1gYPAywQRL+19QDCF8W9/AZiofF5qexsx3GOLVbMQ=="
       },
       "Microsoft.NETCore.DotNetHostPolicy": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "0B8AmWJe3pL1lOM8cIfkQ0VwsZ9sd03EjBsdM64enVi7Ufrc+B7yjnBlUFIXzCfzoHL4BLYKxbYI8fnKQ02pRA==",
+        "resolved": "2.1.15",
+        "contentHash": "gYCjEvdjDoaLZ46llDq4LVKNjHGUVTmlRJ8JpKvDWfATZ7cfT0wHbSZ1mUK+ptdxmeu5+hEi6xfyjB5BX2XUFQ==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostResolver": "2.1.13"
+          "Microsoft.NETCore.DotNetHostResolver": "2.1.15"
         }
       },
       "Microsoft.NETCore.DotNetHostResolver": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "dyG06+WY38ite0ObF6TBZN9Vivbgd7Isdd5lwb5rmsGfPdKdLGv/5ZdM7QP+YHV7pjEQD2Ee3EU+RNhkfV8Ptw==",
+        "resolved": "2.1.15",
+        "contentHash": "GjVno2ZsIV/FJr04Z/eCosKs/s+kQedsS+ZaDx4O0LMXGpwAYtUqggGYstmOMIO5RNWfpX+Al4hNTtZMKOBrjA==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetAppHost": "2.1.13"
+          "Microsoft.NETCore.DotNetAppHost": "2.1.15"
         }
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
-        "resolved": "2.1.6",
-        "contentHash": "MX6jvPsEer3ap638v2toFHHrK9Tq6qLxqV8z+0lKM9HSmEGJc26X2ZbRa5+XnPjfgXL5mrb/6T9eBjYI6tgB2g=="
+        "resolved": "2.1.7",
+        "contentHash": "tgYLpldLzHRPFhhWKWw0PHI584pkJ35+3xmH1eCLxOhaNkWpcz7LPACF4rsJWqI5HrLLImJ4WDuMd9YeAwf5Fg=="
       },
       "Microsoft.NETCore.Targets": {
         "type": "Transitive",
@@ -86,67 +86,67 @@
     ".NETCoreApp,Version=v2.1/win10-x64": {
       "Microsoft.NETCore.App": {
         "type": "Direct",
-        "requested": "[2.1.13, )",
-        "resolved": "2.1.13",
-        "contentHash": "oB/yobEiuhNDI5M6Lr52vlyWFbwIumLK6sqaOZ4pLe7jR1w5nBjoFXhrBJOr/EWqu8DNraaquTkhN/EaOib62g==",
+        "requested": "[2.1.15, )",
+        "resolved": "2.1.15",
+        "contentHash": "PX20natRCCWDkfmVdzMg+/DXlisl8nnxPnjn9mCU7hs120whAJNg2+0SNtT/PFWHXuEtnmS4Zb0dDQiFsIV9ew==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostPolicy": "2.1.13",
-          "Microsoft.NETCore.Platforms": "2.1.6",
+          "Microsoft.NETCore.DotNetHostPolicy": "2.1.15",
+          "Microsoft.NETCore.Platforms": "2.1.7",
           "Microsoft.NETCore.Targets": "2.0.0",
           "NETStandard.Library": "2.0.3",
-          "runtime.win-x64.Microsoft.NETCore.App": "2.1.13"
+          "runtime.win-x64.Microsoft.NETCore.App": "2.1.15"
         }
       },
       "Microsoft.NETCore.DotNetAppHost": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "V2S2OlQnSh5/aWhfVip9UuIBCaz45AeOpmeiqO9Kf+9mtWhcCSRX3WbqQ9529IIbOsUFhLPqRnDE+mfWO9chWw==",
+        "resolved": "2.1.15",
+        "contentHash": "m51LfM5baQl4twjEzezwTXNyDaOdu3my09ywAVfxJMTNB1gYPAywQRL+19QDCF8W9/AZiofF5qexsx3GOLVbMQ==",
         "dependencies": {
-          "runtime.win-x64.Microsoft.NETCore.DotNetAppHost": "2.1.13"
+          "runtime.win-x64.Microsoft.NETCore.DotNetAppHost": "2.1.15"
         }
       },
       "Microsoft.NETCore.DotNetHostPolicy": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "0B8AmWJe3pL1lOM8cIfkQ0VwsZ9sd03EjBsdM64enVi7Ufrc+B7yjnBlUFIXzCfzoHL4BLYKxbYI8fnKQ02pRA==",
+        "resolved": "2.1.15",
+        "contentHash": "gYCjEvdjDoaLZ46llDq4LVKNjHGUVTmlRJ8JpKvDWfATZ7cfT0wHbSZ1mUK+ptdxmeu5+hEi6xfyjB5BX2XUFQ==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostResolver": "2.1.13",
-          "runtime.win-x64.Microsoft.NETCore.DotNetHostPolicy": "2.1.13"
+          "Microsoft.NETCore.DotNetHostResolver": "2.1.15",
+          "runtime.win-x64.Microsoft.NETCore.DotNetHostPolicy": "2.1.15"
         }
       },
       "Microsoft.NETCore.DotNetHostResolver": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "dyG06+WY38ite0ObF6TBZN9Vivbgd7Isdd5lwb5rmsGfPdKdLGv/5ZdM7QP+YHV7pjEQD2Ee3EU+RNhkfV8Ptw==",
+        "resolved": "2.1.15",
+        "contentHash": "GjVno2ZsIV/FJr04Z/eCosKs/s+kQedsS+ZaDx4O0LMXGpwAYtUqggGYstmOMIO5RNWfpX+Al4hNTtZMKOBrjA==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetAppHost": "2.1.13",
-          "runtime.win-x64.Microsoft.NETCore.DotNetHostResolver": "2.1.13"
+          "Microsoft.NETCore.DotNetAppHost": "2.1.15",
+          "runtime.win-x64.Microsoft.NETCore.DotNetHostResolver": "2.1.15"
         }
       },
       "runtime.win-x64.Microsoft.NETCore.App": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "cLqGiUc6+oWn7aM0YPndLfZMNe1Z/6TdOEmFK0ABxlK9F4tAN44b0BVzLoRaiqvs1EnZoIhXOc67lL0Ey9Xx9Q=="
+        "resolved": "2.1.15",
+        "contentHash": "+yICZbSNxvmVX5vUyPM8xVnOczDpdg5C+rHPk+AWagY3o47bnEcGH2LDK/sFraGJ/+WsOnyRh4I++HXuHI6O2w=="
       },
       "runtime.win-x64.Microsoft.NETCore.DotNetAppHost": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "6v3tMG+96HvZ6Byahsz6EyHRNe0MHSkGjvUZ1DiGt0a2eUjwozjk0cXRQuvUqwxWB1S/TAUlELTPg6UoC35MsQ=="
+        "resolved": "2.1.15",
+        "contentHash": "fraAtapbFbwuMsAfZrcx/+4RgECxMByVJC929ATUSWVR8w5rNBPgjUCJnW9Vdx9BUlyJs0hAq2E3WcgC/PcbLQ=="
       },
       "runtime.win-x64.Microsoft.NETCore.DotNetHostPolicy": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "UlDO6/hRRd1kREwWd/7A6nqi2NhHa+dfjSVRynt6Bx4E1llj/j8WcvblGX2c/j7bGlP6Y8Km5HZzv+rwZgbSdQ==",
+        "resolved": "2.1.15",
+        "contentHash": "BvjLdFA017dQuV0NE0t14JhRLAu/94OtWLzvir7QtaAdyyRsboDv/jZe2+HzDJq9cdvM13AirDnPJFwqr/Z9jw==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostResolver": "2.1.13"
+          "Microsoft.NETCore.DotNetHostResolver": "2.1.15"
         }
       },
       "runtime.win-x64.Microsoft.NETCore.DotNetHostResolver": {
         "type": "Transitive",
-        "resolved": "2.1.13",
-        "contentHash": "gs0XwTAB+tSHZkEg6A7CpOXBbjxh4aeNM10U23/WbEWsuzqv7ZfGy8vds7ojdGU4n2WamOOlRXJzmROl5rwdMQ==",
+        "resolved": "2.1.15",
+        "contentHash": "z/FyPo6yxsEEmgopBVfmJm+UM2F27H5l/5Pf5TZ6y1h9Vzo5dlFTmHhEwEWn3j/otNOEJzwvFQINi2ucSfktIw==",
         "dependencies": {
-          "Microsoft.NETCore.DotNetAppHost": "2.1.13"
+          "Microsoft.NETCore.DotNetAppHost": "2.1.15"
         }
       },
       "System.Security.Cryptography.ProtectedData": {
