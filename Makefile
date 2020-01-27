@@ -34,6 +34,7 @@ test: build
 	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
 	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
+	dotnet sourcelink test artifacts/nosln.*.nupkg
 
 install: build
 	dotnet tool update --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`
