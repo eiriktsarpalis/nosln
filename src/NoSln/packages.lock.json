@@ -1,26 +1,6 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETFramework,Version=v4.6": {
-      "FSharp.Core": {
-        "type": "Direct",
-        "requested": "[4.3.4, )",
-        "resolved": "4.3.4",
-        "contentHash": "u2UeaUl1pt/Lktdpzq3AsaRmOV1mOiQaSbZgYqQQYuqBSjnILWemetff4xMZIAZi0241jlIkcrJQsU5PlLwIJA=="
-      },
-      "MinVer": {
-        "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "1U1JIwD47a/m9S1LXdDm+fByP3LYR9hTeFfi1MlizScXF4e4yUpZvunEyQAovVfi4qYaUlVzIbk08OXFfz3FfQ=="
-      },
-      "System.ValueTuple": {
-        "type": "Direct",
-        "requested": "[4.4.0, )",
-        "resolved": "4.4.0",
-        "contentHash": "BahUww/+mdP4ARCAh2RQhQTg13wYLVrBb9SYVgW8ZlrwjraGCXHGjo0oIiUfZ34LUZkMMR+RAzR7dEY4S1HeQQ=="
-      }
-    },
     ".NETStandard,Version=v2.0": {
       "FSharp.Core": {
         "type": "Direct",
