@@ -8,7 +8,4 @@ RUN apt-get update && \
 WORKDIR /app
 COPY . /app
 
-ENV NUGET_API_KEY unspecified
-ENV TARGETS test
-
-CMD make $TARGETS NUGET_VERSION=$NUGET_VERSION NUGET_API_KEY=$NUGET_API_KEY
+CMD make
