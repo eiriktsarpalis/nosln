@@ -17,6 +17,7 @@ clean:
 	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.sln
 
 minver: clean
+	# minver cli still required due to https://github.com/dotnet/cli/issues/8485
 	dotnet tool restore
 	dotnet minver
 
@@ -35,7 +36,7 @@ test: build
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
 
 install: build
-	dotnet tool install --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`
+	dotnet tool update --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`
 
 uninstall:
 	dotnet tool uninstall -g dotnet-nosln
