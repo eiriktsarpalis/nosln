@@ -1,4 +1,4 @@
-FROM eiriktsarpalis/dotnet-sdk-mono:3.0.100-buster
+FROM eiriktsarpalis/dotnet-sdk-mono:3.1.101-buster
 
 RUN apt-get update && \
     apt-get install -y make && \
