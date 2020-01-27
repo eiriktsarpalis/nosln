@@ -1,6 +1,6 @@
 # dotnet-nosln [![Build Status](https://travis-ci.org/eiriktsarpalis/nosln.svg?branch=master)](https://travis-ci.org/eiriktsarpalis/nosln) [![NuGet](https://img.shields.io/nuget/vpre/dotnet-nosln.svg)](https://www.nuget.org/packages/dotnet-nosln/) [![license](https://img.shields.io/github/license/eiriktsarpalis/nosln.svg)](License.md)
 
-dotnet-nosln (pronounced "noslyn") is a cli tool that generates solution files. 
+dotnet-nosln is a cli tool that generates solution files. 
 Designed to minimize the awkwardness of solution files, 
 nosln treats them as disposable, auto-generated entities deriving from the file system.
 
