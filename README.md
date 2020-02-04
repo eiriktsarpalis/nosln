@@ -4,6 +4,11 @@ dotnet-nosln is a cli tool that generates solution files.
 Designed to minimize the awkwardness of solution files, 
 nosln treats them as disposable, auto-generated entities deriving from the file system.
 
+To install too, simply type (dotnet sdk >= 2.1 required)
+```
+$ dotnet tool install -g dotnet-nosln
+```
+
 To use nosln, simply navigate to your favorite repo and type
 ```
 $ dotnet nosln --start
