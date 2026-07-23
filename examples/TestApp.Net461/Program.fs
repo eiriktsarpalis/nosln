@@ -5,7 +5,7 @@ type Argument =
     | Echo of string
 with
     interface IArgParserTemplate with
-        member __.Usage = "echo argument"
+        member _.Usage = "echo argument"
 
 
 let parser = ArgumentParser.Create<Argument>()

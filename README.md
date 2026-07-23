@@ -1,10 +1,10 @@
-# dotnet-nosln [![Build Status](https://travis-ci.org/eiriktsarpalis/nosln.svg?branch=master)](https://travis-ci.org/eiriktsarpalis/nosln) [![NuGet](https://img.shields.io/nuget/vpre/dotnet-nosln.svg)](https://www.nuget.org/packages/dotnet-nosln/) [![license](https://img.shields.io/github/license/eiriktsarpalis/nosln.svg)](License.md)
+# dotnet-nosln [![CI](https://github.com/eiriktsarpalis/nosln/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/eiriktsarpalis/nosln/actions/workflows/ci.yml) [![NuGet](https://img.shields.io/nuget/vpre/dotnet-nosln.svg)](https://www.nuget.org/packages/dotnet-nosln/) [![license](https://img.shields.io/github/license/eiriktsarpalis/nosln.svg)](License.md)
 
 dotnet-nosln is a cli tool that generates solution files. 
 Designed to minimize the awkwardness of solution files, 
 nosln treats them as disposable, auto-generated entities deriving from the file system.
 
-To install the tool simply type (dotnet sdk >= 2.1 required)
+To install the tool, use the .NET 10 SDK:
 ```
 $ dotnet tool install -g dotnet-nosln
 ```
@@ -30,7 +30,7 @@ To install nosln on your machine, just clone the repo and run
 ```
 make install
 ```
-GNU make is required.
+The .NET 10 SDK and GNU make are required.
 
 ## More arguments
 

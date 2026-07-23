@@ -1,8 +1,7 @@
-<Project ToolsVersion="15.0">
+<Project>
   <!-- Global properties for all projects -->
   <PropertyGroup>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RestoreLockedMode>true</RestoreLockedMode>
+    <LangVersion>10.0</LangVersion>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <PropertyGroup>
@@ -12,7 +11,10 @@
     <PackageTags>dotnet;cli;solutions;sln</PackageTags>
     <PackageProjectUrl>https://github.com/eiriktsarpalis/nosln</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eiriktsarpalis/nosln</RepositoryUrl>
-    <PackageLicense>https://github.com/eiriktsarpalis/nosln/blob/master/License.md</PackageLicense>
-    <NoWarn>$(NoWarn);NU5125;FS2003;NU5105</NoWarn>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NoWarn>$(NoWarn);FS2003;NU5105</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" />
+  </ItemGroup>
 </Project>

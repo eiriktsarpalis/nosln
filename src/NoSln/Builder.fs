@@ -48,7 +48,7 @@ let mkTempSolutionfile (baseDirectory : string) =
     let tempPath = Path.GetTempPath()
     let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
     let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
-    let filename = sprintf "%s-%s.sln" slnIdentifier randomSuffix
+    let filename = $"{slnIdentifier}-{randomSuffix}.sln"
     Path.Combine(tempPath, filename)
 
 /// gets the file path to be used within the solution file
@@ -172,12 +172,12 @@ with
     member folderB.ToFolder() : SolutionFolder =
         let rec aux (folderB : FolderBuilder) : SolutionFolder =
             let id = Guid.NewGuid()
-            let projects = folderB.projects |> Seq.sortBy (fun p -> p.name) |> Seq.toList
-            let files = folderB.files |> Seq.sortBy (fun f -> f.id) |> Seq.toList
+            let projects = folderB.projects |> Seq.sortBy _.name |> Seq.toList
+            let files = folderB.files |> Seq.sortBy _.id |> Seq.toList
             let folders = 
                 folderB.folders.Values
                 |> Seq.map aux
-                |> Seq.sortBy (fun f -> f.name)
+                |> Seq.sortBy _.name
                 |> Seq.toList
             {
                 id = id
