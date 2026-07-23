@@ -331,5 +331,5 @@ ASALocalRun/
 
 .store/
 /tools/
-*.sln
+*.slnx
 .ionide/

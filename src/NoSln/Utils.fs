@@ -59,34 +59,3 @@ module Dictionary =
         let dict = Dictionary<_,_>()
         for k,v in keyValuePairs do dict.Add(k,v)
         dict
-
-type Map<'k,'v when 'k : comparison> with
-    member m.Keys   = (m :> IDictionary<'k,'v>).Keys
-    member m.Values = (m :> IDictionary<'k,'v>).Values
-
-
-module Graph =
-
-    let tryGetTopologicalSorting (graph : seq<'T * #seq<'T>>) =
-        // straightforward implementation of Kahn's algorithm
-        let state = 
-            graph 
-            |> Seq.map (fun (v,es) -> v, HashSet(es :> seq<_>))
-            |> Dictionary.create
-
-        let sorted = ResizeArray()
-
-        let stripVertex v =
-            state.Remove v |> ignore
-            for es in state.Values do es.Remove v |> ignore
-
-        let rec aux () =
-            if state.Count = 0 then Seq.toList sorted |> Some
-            else
-                match state |> Seq.tryFind (fun kv -> kv.Value.Count = 0) with
-                | None -> None // graph contains cycles, cannot find topological sort
-                | Some (KeyValue(v,_)) ->
-                    stripVertex v
-                    sorted.Add v
-                    aux()
-        aux()

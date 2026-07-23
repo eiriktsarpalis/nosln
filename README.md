@@ -1,32 +1,35 @@
 # dotnet-nosln [![CI](https://github.com/eiriktsarpalis/nosln/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/eiriktsarpalis/nosln/actions/workflows/ci.yml) [![NuGet](https://img.shields.io/nuget/vpre/dotnet-nosln.svg)](https://www.nuget.org/packages/dotnet-nosln/) [![license](https://img.shields.io/github/license/eiriktsarpalis/nosln.svg)](License.md)
 
-dotnet-nosln is a cli tool that generates solution files. 
-Designed to minimize the awkwardness of solution files, 
-nosln treats them as disposable, auto-generated entities deriving from the file system.
+dotnet-nosln is a CLI tool that generates solution files.
+It treats solutions as disposable, auto-generated files derived from the file system.
 
 To install the tool, use the .NET 10 SDK:
+
 ```
 $ dotnet tool install -g dotnet-nosln
 ```
 
 Then simply navigate to your favorite repo and type
+
 ```
 $ dotnet nosln --start
 ```
-This will will automatically generate a solution file based on the folder structure in your current directory,
-then immediately start Visual Studio using that particular solution file.
+This generates a solution file based on the folder structure in the current directory,
+then starts Visual Studio with that file.
 
 It will also include any solution items that happen to exist in the particular folder hierarchy, respecting any `.gitignore` files that happen to exist in the repo.
 
 Running
-```
-$ dotnet nosln -TF -I '**/*Tests*' -o tests.sln
-```
-will create a solution file containing test projects only.
 
-## Building & Installing
+```
+$ dotnet nosln -TF -I '**/*Tests*' -o tests.slnx
+```
+creates a solution file containing test projects only.
+
+## Building and installing
 
 To install nosln on your machine, just clone the repo and run
+
 ```
 make install
 ```
@@ -35,6 +38,7 @@ The .NET 10 SDK and GNU make are required.
 ## More arguments
 
 Full list of all nosln command line arguments:
+
 ```
 USAGE: dotnet nosln [--help] [--version] [--output <solution file>] [--include-projects <pattern>]
                     [--exclude-projects <pattern>] [--include-files <pattern>] [--exclude-files <pattern>]
@@ -67,7 +71,7 @@ OPTIONS:
     --no-files, -F        Do not include any solution items in the generated solution.
     --no-transitive-projects, -T
                           By default, nosln will include transitive p2p dependencies, even if excluded by a globbing
-                          pattern or outside of the project directory.Enable this flag to avoid expanding to
+                          pattern or outside of the project directory. Enable this flag to avoid expanding to
                           transitive projects.
     --absolute-paths, -a  Use absolute paths in generated solution file. Otherwise contents will be relative to the
                           solution file output folder.

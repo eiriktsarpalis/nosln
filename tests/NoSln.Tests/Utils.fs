@@ -1,6 +1,7 @@
 ﻿[<AutoOpen>]
 module NoSln.Tests.Utils
 
+open System.IO
 open NoSln
 
 type Node =
@@ -19,7 +20,7 @@ let tryFindPath (path : string list) (solution : Solution) =
                 match projects |> Seq.filter (fun p -> p.name = item) |> Seq.tryHead with
                 | Some p -> Some Project
                 | None ->
-                    match files |> Seq.filter (fun f -> f.id = item) |> Seq.tryHead with
+                    match files |> Seq.filter (fun f -> Path.GetFileName f.fullPath = item) |> Seq.tryHead with
                     | Some f -> Some File
                     | None -> None
 

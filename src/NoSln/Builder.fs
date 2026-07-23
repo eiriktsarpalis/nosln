@@ -1,29 +1,12 @@
 ﻿module internal NoSln.Builder
 
-// Simple tool for generating Solution files out of a list of projects.
+// Simple tool for generating solution files out of a list of projects.
 
 open System
 open System.Collections.Generic
 open System.IO
 open System.Xml.Linq
 open NoSln
-
-[<AutoOpen>]
-module private ProjectTypeGuids =
-
-    //----------------------------------------------------------------------
-    let directoryGuid    = Guid.Parse "2150E333-8FDC-42A3-9474-1A3956D46DE8"
-    //----------------------------------------------------------------------
-    let csProjGuid       = Guid.Parse "9A19103F-16F7-4668-BE54-9A1E7A4F7556"
-    let vbProjGuid       = Guid.Parse "778DAE3C-4631-46EA-AA77-85C1314464D9"
-    let fsProjGuid       = Guid.Parse "6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705"
-    //----------------------------------------------------------------------
-    let csProjGuidLegacy = Guid.Parse "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"
-    let vbProjGuidLegacy = Guid.Parse "F184B08F-C81C-45F6-A57F-5ABD9991F28F"
-    let fsProjGuidLegacy = Guid.Parse "F2A71F9B-5D33-465A-A702-920D77279786"
-
-
-//----------------------
 
 type SolutionConfiguration =
     {
@@ -40,7 +23,7 @@ type SolutionConfiguration =
 
 /// creates a solution file contained in supplied directory
 let mkSolutionFileForDirectory (baseDirectory : string) =
-    let fileName = Path.GetFileName baseDirectory + ".sln"
+    let fileName = Path.GetFileName baseDirectory + ".slnx"
     Path.Combine(baseDirectory, fileName)
 
 /// Generates a random solution file in the system temp directory
@@ -48,7 +31,7 @@ let mkTempSolutionfile (baseDirectory : string) =
     let tempPath = Path.GetTempPath()
     let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
     let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
-    let filename = $"{slnIdentifier}-{randomSuffix}.sln"
+    let filename = $"{slnIdentifier}-{randomSuffix}.slnx"
     Path.Combine(tempPath, filename)
 
 /// gets the file path to be used within the solution file
@@ -57,8 +40,8 @@ let getPathRelativeToSolutionFile (config : SolutionConfiguration) (fullPath : s
         if config.useAbsolutePaths then fullPath
         else Path.getRelativePath (Path.GetDirectoryName config.targetSolutionFile) fullPath
 
-    // Paths in solution file always separated by backslash, regardless of OS
-    path.Replace('/', '\\')
+    // Paths in solution files always use forward slashes, regardless of OS.
+    path.Replace('\\', '/')
 
 /// extracts the solution path (i.e. location of item within nested logical folders) from a given filesystem full path
 let getLogicalPath (config : SolutionConfiguration) (fullPath : string) =
@@ -72,19 +55,6 @@ let getLogicalPath (config : SolutionConfiguration) (fullPath : string) =
         // replace with something acceptable
         path |> Seq.map (function ".." -> "[..]" | p -> p) |> Seq.toList
 
-
-// By no means complete c.f. https://www.codeproject.com/Reference/720512/List-of-Visual-Studio-Project-Type-GUIDs
-let getProjectTypeGuid (fullPath : string) (contents : XDocument) =
-    let isLegacyProject = 
-        contents.Root.Attributes() 
-        |> Seq.exists (fun attr -> attr.Name.LocalName = "Sdk")
-        |> not
-
-    match Path.GetExtension(fullPath).ToLower() with
-    | ".fsproj" -> if isLegacyProject then fsProjGuidLegacy else fsProjGuid
-    | ".csproj" -> if isLegacyProject then csProjGuidLegacy else csProjGuid
-    | ".vbproj" -> if isLegacyProject then vbProjGuidLegacy else vbProjGuid
-    | _ -> csProjGuidLegacy
 
 /// creates a new project node from project file path
 let mkProject (config : SolutionConfiguration) (fullPath : string) : SolutionProject =
@@ -111,11 +81,7 @@ let mkProject (config : SolutionConfiguration) (fullPath : string) : SolutionPro
             else throw NoSlnException "project %A contains p2p reference %A which was not found" fullPath r)
         |> Seq.toList
 
-    let projectTypeGuid = getProjectTypeGuid fullPath xdocument
-
-    { id = Guid.NewGuid() ; 
-      projectTypeGuid = projectTypeGuid ; 
-      p2pReferences = p2pReferences ;
+    { p2pReferences = p2pReferences ;
       name = name ; 
       relativePath = path ; 
       logicalPath = logicalPath ; 
@@ -151,7 +117,7 @@ let mkFile (config : SolutionConfiguration) (fullPath : string) : SolutionFile =
         | [] -> ["Solution Items"] // files cannot live in solution root
         | p -> p
 
-    { id = path ; relativePath = path ; logicalPath = logicalPath ; fullPath = fullPath }
+    { relativePath = path ; logicalPath = logicalPath ; fullPath = fullPath }
 
 let mkFiles (config : SolutionConfiguration) =
     config.files |> List.map (mkFile config)
@@ -171,20 +137,17 @@ with
     /// Maps to immutable folder structure
     member folderB.ToFolder() : SolutionFolder =
         let rec aux (folderB : FolderBuilder) : SolutionFolder =
-            let id = Guid.NewGuid()
             let projects = folderB.projects |> Seq.sortBy _.name |> Seq.toList
-            let files = folderB.files |> Seq.sortBy _.id |> Seq.toList
+            let files = folderB.files |> Seq.sortBy _.relativePath |> Seq.toList
             let folders = 
                 folderB.folders.Values
                 |> Seq.map aux
                 |> Seq.sortBy _.name
                 |> Seq.toList
             {
-                id = id
                 name = folderB.name
                 folders = folders
                 projects = projects
-                projectTypeGuid = ProjectTypeGuids.directoryGuid
                 files = files
             }
 
@@ -221,7 +184,6 @@ let mkSolution (config : SolutionConfiguration) =
     assert rootFolder.files.IsEmpty
 
     {
-        id = rootFolder.id
         targetSolutionFile = config.targetSolutionFile
         projects = rootFolder.projects
         folders = rootFolder.folders

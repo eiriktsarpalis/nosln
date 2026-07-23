@@ -1,5 +1,4 @@
-﻿open System
-open Argu
+﻿open Argu
 
 type Argument =
     | Echo of string
