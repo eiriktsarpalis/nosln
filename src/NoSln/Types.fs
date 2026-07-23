@@ -1,12 +1,8 @@
 ﻿namespace rec NoSln
 
-open System
-
 /// Solution tree representation
 type Solution =
     {
-        /// Solution UUID
-        id : Guid
         /// Root folders in solution
         folders : SolutionFolder list
         /// Root projects in solution
@@ -19,10 +15,6 @@ type Solution =
 /// Solution folder representation
 type SolutionFolder =
     {
-        /// Folder UUID
-        id : Guid
-        /// Project type UUID
-        projectTypeGuid : Guid
         /// Folder name
         name  : string
         /// Folders contained within folder
@@ -36,12 +28,8 @@ type SolutionFolder =
 /// Solution project representation
 type SolutionProject =
     {
-        /// Project UUID
-        id : Guid
         /// Project name
         name : string
-        /// Project type UUID
-        projectTypeGuid : Guid
         /// P2P references of project
         p2pReferences : string list
         /// Fully qualified filesystem path
@@ -55,8 +43,6 @@ type SolutionProject =
 /// Solution file representation
 type SolutionFile =
     {
-        /// File identifier
-        id : string
         /// Fully qualified filesystem path
         fullPath : string
         /// Filesystem path relative to solution file

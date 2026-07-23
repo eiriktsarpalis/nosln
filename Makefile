@@ -14,7 +14,7 @@ DOCKER_IMAGE_LABEL ?= docker-nosln-build
 DOCKER_CONTAINER_NAME ?= docker-nosln-build-container
 
 clean:
-	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.sln
+	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.slnx
 
 minver: clean
 	dotnet tool restore
@@ -28,12 +28,12 @@ build: minver
 	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) --version `dotnet minver -v e` dotnet-nosln
 
 test: build
-	dotnet nosln -D -o nosln.sln
-	dotnet build nosln.sln -c $(CONFIGURATION)
-	dotnet test nosln.sln -c $(CONFIGURATION) --no-build
-	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
-	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
-	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
+	dotnet nosln -D -o nosln.slnx
+	dotnet build nosln.slnx -c $(CONFIGURATION)
+	dotnet test nosln.slnx -c $(CONFIGURATION) --no-build
+	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.slnx
+	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.slnx
+	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.slnx
 
 install: build
 	dotnet tool update --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`

@@ -2,7 +2,6 @@ module NoSln.Cli
 
 open System
 open System.IO
-open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 open Fake.IO.FileSystemOperators
 open Argu
@@ -49,7 +48,7 @@ with
             | No_Files ->
                 "Do not include any solution items in the generated solution."
             | No_Transitive_Projects ->
-                "By default, nosln will include transitive p2p dependencies, even if excluded by a globbing pattern or outside of the project directory." +
+                "By default, nosln will include transitive p2p dependencies, even if excluded by a globbing pattern or outside of the project directory. " +
                 "Enable this flag to avoid expanding to transitive projects."
             | Absolute_Paths ->
                 "Use absolute paths in generated solution file. Otherwise contents will be relative to the solution file output folder."
@@ -111,13 +110,13 @@ let processArguments (results : ParseResults<Argument>) =
             let fileName = 
                 let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
                 let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
-                $"{slnIdentifier}-{randomSuffix}.sln"
+                $"{slnIdentifier}-{randomSuffix}.slnx"
 
             Path.GetTempPath() @@ fileName
         else
             match results.TryGetResult <@ Output @> with
             | Some o -> Path.getFullPathXPlat o
-            | None -> baseDirectory @@ Path.GetFileName baseDirectory + ".sln"
+            | None -> baseDirectory @@ Path.GetFileName baseDirectory + ".slnx"
 
     GenerateSln {
         baseDirectory = baseDirectory
@@ -126,9 +125,7 @@ let processArguments (results : ParseResults<Argument>) =
         fileIncludes = fileIncludes
         fileExcludes = fileExcludes
         gitIgnoreFile = gitIgnoreFile
-        
         targetSolutionFile = targetSln
-        targetSolutionDir = Path.GetDirectoryName targetSln
 
         noFiles = noFiles || flattenProjects
         noTransitiveProjects = noTransitiveProjects

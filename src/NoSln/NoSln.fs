@@ -24,7 +24,7 @@ type NoSln =
     /// <summary>
     ///     Builds a solution object from a collection of project and file paths.
     /// </summary>
-    /// <param name="baseDirectory">Base directory for the generated solution. Sln folder structure will reflect paths relative to that base directory. Defaults to current directory.</param>
+    /// <param name="baseDirectory">Base directory for the generated solution. The solution folder structure will reflect paths relative to that base directory. Defaults to current directory.</param>
     /// <param name="projects">List of project files to be included in the solution as projects.</param>
     /// <param name="files">List of regular files to be included in the solution.</param>
     /// <param name="targetSolutionFile">Target path of the generated solution file. Defaults to a solution file located in the base directory.</param>
@@ -66,7 +66,7 @@ type NoSln =
     /// <summary>
     ///     Writes a solution file from a collection of project and file paths.
     /// </summary>
-    /// <param name="baseDirectory">Base directory for the generated solution. Sln folder structure will reflect paths relative to that base directory. Defaults to current directory.</param>
+    /// <param name="baseDirectory">Base directory for the generated solution. The solution folder structure will reflect paths relative to that base directory. Defaults to current directory.</param>
     /// <param name="projects">List of project files to be included in the solution as projects.</param>
     /// <param name="files">List of regular files to be included in the solution.</param>
     /// <param name="targetSolutionFile">Target path of the generated solution file. Defaults to a solution file located in the base directory.</param>

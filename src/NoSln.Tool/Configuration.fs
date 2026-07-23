@@ -4,7 +4,6 @@ type Configuration =
     {
         baseDirectory : string
         targetSolutionFile : string
-        targetSolutionDir : string
 
         projectIncludes : string list
         projectExcludes : string list

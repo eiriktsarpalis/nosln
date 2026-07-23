@@ -1,7 +1,5 @@
 ﻿module NoSln.Main
 
-open System
-
 [<EntryPoint>]
 let main (argv:string[]) =
     let parser = Cli.mkParser()

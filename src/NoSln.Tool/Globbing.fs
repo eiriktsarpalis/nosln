@@ -46,8 +46,8 @@ let mkSolution (config : Configuration) : Solution =
                   Includes = match config.fileIncludes with [] -> ["**/*"] | es -> es
                   Excludes = excludedPatterns @ config.fileExcludes @ projectFileExcludes }
 
-            let gitIgnorePatterns = 
-                match GitIgnore.tryFindGitIgnoreFile config.baseDirectory with
+            let gitIgnorePatterns =
+                match config.gitIgnoreFile with
                 | None -> None
                 | Some gitIgnoreFile -> GitIgnore.parse gitIgnoreFile |> Some
 

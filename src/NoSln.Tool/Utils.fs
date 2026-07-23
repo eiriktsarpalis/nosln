@@ -76,7 +76,7 @@ module Process =
             let _ = Process.Start psi
             ()
 
-        | env -> raise <| NotImplementedException(sprintf "execution of sln files not yet implemented in %O environments" env)
+        | env -> raise <| NotImplementedException(sprintf "execution of solution files not yet implemented in %O environments" env)
 
 type ColoredProcessExiter() =
     interface IExiter with
