@@ -4,7 +4,7 @@ ARTIFACT_PATH := $(SOURCE_DIRECTORY)artifacts
 LIBRARY_PROJECT := src/NoSln
 NETTOOL_PROJECT := src/NoSln.Tool
 TOOL_PATH := $(SOURCE_DIRECTORY)tools
-PATH := $(PATH):$(TOOL_PATH)
+NOSLN := $(TOOL_PATH)/dotnet-nosln
 CONFIGURATION ?= Release
 NUGET_SOURCE ?= "https://api.nuget.org/v3/index.json"
 NUGET_API_KEY ?= ""
@@ -28,12 +28,12 @@ build: minver
 	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) --version `dotnet minver -v e` dotnet-nosln
 
 test: build
-	dotnet nosln -D -o nosln.slnx
+	$(NOSLN) -D -o nosln.slnx
 	dotnet build nosln.slnx -c $(CONFIGURATION)
 	dotnet test nosln.slnx -c $(CONFIGURATION) --no-build
-	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.slnx
-	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.slnx
-	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.slnx
+	$(NOSLN) -D src/ -o $(ARTIFACT_PATH)/src.slnx
+	$(NOSLN) -D examples/ -o $(ARTIFACT_PATH)/examples.slnx
+	$(NOSLN) -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.slnx
 
 install: build
 	dotnet tool update --add-source $(ARTIFACT_PATH) -g dotnet-nosln --version `dotnet minver -v e`
