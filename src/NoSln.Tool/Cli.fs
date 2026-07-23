@@ -111,7 +111,7 @@ let processArguments (results : ParseResults<Argument>) =
             let fileName = 
                 let slnIdentifier = Path.GetFileName baseDirectory // get filename of directory
                 let randomSuffix = Path.GetRandomFileName() |> Path.GetFileNameWithoutExtension
-                sprintf "%s-%s.sln" slnIdentifier randomSuffix
+                $"{slnIdentifier}-{randomSuffix}.sln"
 
             Path.GetTempPath() @@ fileName
         else

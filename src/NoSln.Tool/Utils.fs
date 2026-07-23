@@ -62,17 +62,17 @@ module Process =
     let executeFile (path : string) =
         match Environment.osPlatform with
         | Environment.Windows -> 
-            let psi = new ProcessStartInfo(path, UseShellExecute = true)
+            let psi = ProcessStartInfo(path, UseShellExecute = true)
             let _ = Process.Start psi
             ()
 
         | Environment.OSX ->
-            let psi = new ProcessStartInfo("open", path)
+            let psi = ProcessStartInfo("open", path)
             let _ = Process.Start psi
             ()
         
         | Environment.Linux ->
-            let psi = new ProcessStartInfo("xdg-open", path)
+            let psi = ProcessStartInfo("xdg-open", path)
             let _ = Process.Start psi
             ()
 
@@ -80,8 +80,8 @@ module Process =
 
 type ColoredProcessExiter() =
     interface IExiter with
-        member __.Name = "exiter"
-        member __.Exit(message, code) =
+        member _.Name = "exiter"
+        member _.Exit(message, code) =
             if code = ErrorCode.HelpText then
                 Console.WriteLine(message)
             else

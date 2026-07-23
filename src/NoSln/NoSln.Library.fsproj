@@ -20,11 +20,8 @@
     <Compile Include="Builder.fs" />
     <Compile Include="Formatter.fs" />
     <Compile Include="NoSln.fs" />
-    <None Include="packages.lock.json" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.3.4" />
-    <PackageReference Include="MinVer" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="MinVer" PrivateAssets="All" />
   </ItemGroup>
 </Project>

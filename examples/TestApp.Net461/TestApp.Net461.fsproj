@@ -11,11 +11,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
-  <ItemGroup />
-
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Argu" Version="5.2.0" />
+    <PackageReference Include="Argu" />
   </ItemGroup>
 
 </Project>

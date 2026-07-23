@@ -2,8 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>dotnet-nosln</AssemblyName>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
@@ -24,14 +23,11 @@
     <Compile Include="Globbing.fs" />
     <Compile Include="Cli.fs" />
     <Compile Include="Main.fs" />
-    <None Include="packages.lock.json" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.5.0" />
-    <PackageReference Include="Fake.IO.FileSystem" Version="5.13.5" />
-    <PackageReference Include="Argu" Version="5.3.0" />
-    <PackageReference Include="MinVer" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="Fake.IO.FileSystem" />
+    <PackageReference Include="Argu" />
+    <PackageReference Include="MinVer" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoSln\NoSln.Library.fsproj" />

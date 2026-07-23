@@ -57,7 +57,7 @@ let private formatSolutionFileLines (solution : Solution) = seq {
         | [] -> ()
         | files ->
             yield "\tProjectSection(SolutionItems) = preProject"
-            for file in files |> Seq.sortBy (fun f -> f.id.ToLowerInvariant()) do yield sprintf "\t\t%s = %s" file.id file.relativePath
+            for file in files |> Seq.sortBy _.id.ToLowerInvariant() do yield sprintf "\t\t%s = %s" file.id file.relativePath
             yield "\tEndProjectSection"
 
         yield "EndProject"

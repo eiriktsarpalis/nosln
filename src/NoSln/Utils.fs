@@ -56,7 +56,7 @@ module Path =
 
 module Dictionary =
     let create keyValuePairs =
-        let dict = new Dictionary<_,_>()
+        let dict = Dictionary<_,_>()
         for k,v in keyValuePairs do dict.Add(k,v)
         dict
 

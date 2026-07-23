@@ -17,20 +17,20 @@ clean:
 	dotnet clean -c $(CONFIGURATION) $(NETTOOL_PROJECT) && rm -rf $(TOOL_PATH) && rm -rf $(ARTIFACT_PATH) && rm -rf *.sln
 
 minver: clean
-	# minver cli still required due to https://github.com/dotnet/cli/issues/8485
 	dotnet tool restore
 	dotnet minver
 
 build: minver
-	dotnet restore --locked-mode $(LIBRARY_PROJECT)
-	dotnet restore --locked-mode $(NETTOOL_PROJECT)
+	dotnet restore $(LIBRARY_PROJECT)
+	dotnet restore $(NETTOOL_PROJECT)
 	dotnet pack --no-restore -c $(CONFIGURATION) -o $(ARTIFACT_PATH) $(LIBRARY_PROJECT)
 	dotnet pack --no-restore -c $(CONFIGURATION) -o $(ARTIFACT_PATH) $(NETTOOL_PROJECT)
 	dotnet tool install --add-source $(ARTIFACT_PATH) --tool-path $(TOOL_PATH) --version `dotnet minver -v e` dotnet-nosln
 
 test: build
 	dotnet nosln -D -o nosln.sln
-	dotnet test -c $(CONFIGURATION) --no-restore
+	dotnet build nosln.sln -c $(CONFIGURATION)
+	dotnet test nosln.sln -c $(CONFIGURATION) --no-build
 	dotnet nosln -D src/ -o $(ARTIFACT_PATH)/src.sln
 	dotnet nosln -D examples/ -o $(ARTIFACT_PATH)/examples.sln
 	dotnet nosln -DFT -I 'tests/**/*' -o $(ARTIFACT_PATH)/tests.sln
